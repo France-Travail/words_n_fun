@@ -1,0 +1,113 @@
+{
+  "notnull": {
+    "before": {"remove_non_string": "It is useless to call notnull after calling remove_non_string"},
+    "after": {"remove_non_string": "It is useless to call notnull before remove_non_string"}
+  },
+  "remove_non_string": {
+    "before": {"notnull": "It is useless to call notnull before remove_non_string"},
+    "after": {"notnull": "It is useless to call notnull after calling remove_non_string"}
+  },
+  "get_true_spaces": {},
+  "remove_accents": {
+    "before" : {
+      "trim_string" : "Function remove_accents must not be called after calling trim_string since it adds whitespaces.",
+      "remove_leading_and_ending_spaces" : "Function remove_accents must not be called after calling remove_leading_and_ending_spaces since it adds whitespaces."
+    }
+  },
+  "remove_stopwords": {
+    "before" : {
+      "lemmatize": "Stopwords dictionnary might not get any match if Function lemmatize is called before remove_stopwords",
+      "stemmatize": "Stopwords dictionnary might not get any match if Function stemmatize is called before remove_stopwords",
+      "trim_string" : "Function remove_stopwords must not be called after calling trim_string since it adds whitespaces.",
+      "remove_leading_and_ending_spaces" : "Function remove_stopwords must not be called after calling remove_leading_and_ending_spaces since it adds whitespaces."
+    },
+    "not_before": {
+      "OR": {
+        "to_lower": "Stopwords dictionnary is in lower case, you must use to_lower or to_lower_except_singleletters beforehand.",
+        "to_lower_except_singleletters": "Stopwords dictionnary is in lower case, you must use to_lower or to_lower_except_singleletters beforehand."
+      },
+      "remove_gender_synonyms": "It is advised to use function remove_gender_synonyms before remove_stopwords"
+    }
+  },
+  "trim_string": {
+    "after": {
+      "remove_punct": "Function remove_punct must not be called after calling trim_string since it adds whitespaces.",
+      "remove_punct_except_parenthesis": "Function remove_punct_except_parenthesis must not be called after calling trim_string since it adds whitespaces.",
+      "remove_numeric": "Function remove_numeric must not be called after calling trim_string since it adds whitespaces.",
+      "add_space_around_special": "It is not advised to use Function add_space_around_special after calling trim_string since it could add whitespaces.",
+      "lemmatize" : "Function lemmatize must not be called after calling trim_string since it adds whitespaces.",
+      "remove_stopwords" : "Function remove_stopwords must not be called after calling trim_string since it adds whitespaces.",
+      "remove_accents" : "Function remove_accents must not be called after calling trim_string since it adds whitespaces."
+    }
+  },
+  "remove_leading_and_ending_spaces": {
+    "after": {
+      "remove_punct": "Function remove_punct must not be called after calling remove_leading_and_ending_spaces since it adds whitespaces.",
+      "remove_punct_except_parenthesis": "Function remove_punct_except_parenthesis must not be called after calling remove_leading_and_ending_spaces since it adds whitespaces.",
+      "remove_numeric": "Function remove_numeric must not be called after calling remove_leading_and_ending_spaces since it adds whitespaces.",
+      "add_space_around_special": "It is not advised to use Function add_space_around_special after calling remove_leading_and_ending_spaces since it could add whitespaces.",
+      "lemmatize" : "Function lemmatize must not be called after calling remove_leading_and_ending_spaces since it adds whitespaces.",
+      "remove_stopwords" : "Function remove_stopwords must not be called after calling remove_leading_and_ending_spaces since it adds whitespaces.",
+      "remove_accents" : "Function remove_accents must not be called after calling remove_leading_and_ending_spaces since it adds whitespaces."
+    }
+  },
+  "remove_punct": {
+    "before": {
+      "trim_string": "Function remove_punct must not be called after calling trim_string since it adds whitespaces.",
+      "remove_leading_and_ending_spaces": "Function remove_punct must not be called after calling remove_leading_and_ending_spaces since it adds whitespaces.",
+      "add_point": "Function add_point becomes useless when Function remove_punct is used right after."
+    },
+    "after": {"remove_gender_synonyms": "Function remove_punct must not be called before remove_gender_synonyms."}
+  },
+  "remove_punct_except_parenthesis": {
+    "before": {
+      "trim_string": "Function remove_punct_except_parenthesis must not be called after calling trim_string since it adds whitespaces.",
+      "remove_leading_and_ending_spaces": "Function remove_punct_except_parenthesis must not be called after calling remove_leading_and_ending_spaces since it adds whitespaces.",
+      "add_point": "Function add_point becomes useless when Function remove_punct_except_parenthesis is used right after."
+    }
+  },
+  "pe_matching": {},
+  "to_lower": {},
+  "to_lower_except_singleletters": {},
+  "remove_numeric": {
+    "before": {
+      "trim_string": "Function remove_numeric must not be called after calling trim_string since it adds whitespaces.",
+      "remove_leading_and_ending_spaces": "Function remove_numeric must not be called after calling remove_leading_and_ending_spaces since it adds whitespaces."
+    }
+  },
+  "remove_gender_synonyms": {
+    "before": {
+      "remove_punct": "Function remove_punct must not be called before remove_gender_synonyms.",
+      "lemmatize": "Function lemmatize must not be called before remove_gender_synonyms.",
+      "stemmatize": "Function stemmatize must not be called before remove_gender_synonyms."
+    }
+  },
+  "lemmatize": {
+    "after": {
+      "remove_gender_synonyms": "Function lemmatize must not be called before remove_gender_synonyms.",
+      "remove_stopwords": "Stopwords dictionnary might not get any match if Function lemmatize is called before remove_stopwords"
+    },
+    "before": {
+      "trim_string" : "Function lemmatize must not be called after calling trim_string since it adds whitespaces.",
+      "remove_leading_and_ending_spaces" : "Function lemmatize must not be called after calling remove_leading_and_ending_spaces since it adds whitespaces."
+    }
+  },
+  "stemmatize": {
+    "after": {
+      "remove_gender_synonyms": "Function stemmatize must not be called before remove_gender_synonyms.",
+      "remove_stopwords": "Stopwords dictionnary might not get any match if Function stemmatize is called before remove_stopwords"
+    }
+  },
+  "add_point": {
+    "after": {
+      "remove_punct": "Function add_point becomes useless when Function remove_punct is used right after.",
+      "remove_punct_except_parenthesis": "Function add_point becomes useless when Function remove_punct_except_parenthesis is used right after."
+    }
+  },
+  "add_space_around_special": {
+    "before":{
+      "trim_string": "It is not advised to use Function add_space_around_special after calling trim_string since it could add whitespaces.",
+      "remove_leading_and_ending_spaces": "It is not advised to use Function add_space_around_special after calling remove_leading_and_ending_spaces since it could add whitespaces."
+    }
+  }
+}

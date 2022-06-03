@@ -22,7 +22,7 @@
 
 from typing import Tuple
 import pandas as pd
-from pe_semantic import utils
+from words_n_fun import utils
 
 # Get logger
 import logging

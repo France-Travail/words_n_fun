@@ -27,8 +27,8 @@ import os
 import importlib
 import numpy as np
 import pandas as pd
-from pe_semantic import utils
-from pe_semantic.preprocessing import stopwords
+from words_n_fun import utils
+from words_n_fun.preprocessing import stopwords
 
 # Disable logging
 import logging

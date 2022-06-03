@@ -27,13 +27,13 @@ version = os.getenv('VERSION') or version+'-local'
 setup(
     name='words_n_fun',
     version=version,
-    packages=['pe_semantic', 'pe_semantic.preprocessing'],
+    packages=['words_n_fun', 'words_n_fun.preprocessing'],
     license='Aucune',
     author='Agence Data Services PE Nantes',
     description="Semantic library of the Data Services agency",
     platforms=['windows', 'linux'],
     package_data={
-        'pe_semantic': ['configs/*.json', 'nltk_data/corpora/stopwords/french']
+        'words_n_fun': ['configs/*.json', 'nltk_data/corpora/stopwords/french']
     },
     include_package_data=True,
     install_requires=[

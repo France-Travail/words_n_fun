@@ -2,17 +2,17 @@
 
 ## Tests - unit test of basic functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
@@ -28,9 +28,9 @@ import spacy
 import importlib
 import numpy as np
 import pandas as pd
-from pe_semantic import utils
-from pe_semantic.preprocessing import basic
-from pe_semantic.preprocessing import stopwords
+from words_n_fun import utils
+from words_n_fun.preprocessing import basic
+from words_n_fun.preprocessing import stopwords
 
 # Disable logging
 import logging
@@ -180,7 +180,7 @@ class BasicTests(unittest.TestCase):
         self.assertEqual(list(basic.remove_accents(pd.Series(docs), use_tqdm=False).replace({np.nan: None})), docs_accents_removed)
 
 
-    @patch('pe_semantic.preprocessing.basic.remove_accents', side_effect=nominal_remove_accents)
+    @patch('words_n_fun.preprocessing.basic.remove_accents', side_effect=nominal_remove_accents)
     def test_remove_stopwords(self, RemoveAccentMock):
         '''Test de la fonction basic.remove_stopwords'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]

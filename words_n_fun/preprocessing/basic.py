@@ -44,11 +44,11 @@ import pandas as pd
 from typing import Union, List
 from nltk.stem.snowball import FrenchStemmer
 
-from pe_semantic import utils
-from pe_semantic import CustomTqdm as tqdm
-from pe_semantic.preprocessing import stopwords
-from pe_semantic.preprocessing import lemmatizer
-from pe_semantic.preprocessing import synonym_malefemale_replacement
+from words_n_fun import utils
+from words_n_fun import CustomTqdm as tqdm
+from words_n_fun.preprocessing import stopwords
+from words_n_fun.preprocessing import lemmatizer
+from words_n_fun.preprocessing import synonym_malefemale_replacement
 
 
 tqdm.pandas()

@@ -2,17 +2,17 @@
 
 ## Test - unit test of lemmatizer (deprecated) functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
@@ -24,7 +24,10 @@ from unittest.mock import patch
 
 # Utils libs
 import os
-import spacy
+try:
+    import spacy
+except ModuleNotFoundError:
+    raise unittest.SkipTest("Skipping all lemmatizer tests as spacy can't be imported.")
 import importlib
 import numpy as np
 import pandas as pd
@@ -57,7 +60,7 @@ class LemmatizerTests(unittest.TestCase):
 
 
     def test_lemmatize(self):
-        '''Test de la fonction lemmatizer.lemmatize'''
+        '''Testing function lemmatizer.lemmatize'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "^Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
         docs_lemmatized = ['chauffeur se accompagnateur trice pers à mob 5 an de expérience', 'je maîtris 12 langage informatique dont le c j avoir le permis b', 'chauffeur se accompagnateur trice pers à mob 5 an de expérience', 'coordinateur d equipe d action territorial', None, None]
 

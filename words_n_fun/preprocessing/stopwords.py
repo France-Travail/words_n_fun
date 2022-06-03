@@ -2,17 +2,17 @@
 
 ## Stopwords management functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
@@ -147,7 +147,7 @@ def remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, 
         'offres_pe': set().union(STOPWORDS_OFFRES_1, STOPWORDS_OFFRES_2),
         'all': set().union(STOPWORDS, stopwords_ascii(), stopwords_nltk(), stopwords_nltk_ascii()),
     }
-    
+
     if opt in usage.keys():
         stopwords_list = list(usage.get(opt))
     else:
@@ -168,7 +168,7 @@ def remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, 
         logger.warning("Stopwords_list is empty.")
         logger.warning("Non strings entries are still replaced by None.")
         return docs.apply(lambda x: x if isinstance(x, str) else None)
-    
+
     regex = utils.get_regex_match_words(stopwords_list)
     return docs.str.replace(regex, '')
 

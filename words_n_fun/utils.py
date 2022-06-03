@@ -2,24 +2,24 @@
 
 ## Utils
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 #
 # Fonctions :
 # - timer -> Decorator to monitor the execution time of a function
-# - data_agnostic -> Decorator to manage type casting from and to pd.Series 
+# - data_agnostic -> Decorator to manage type casting from and to pd.Series
 # - data_agnostic_input -> Decorator to manage type casting to pd.Series
 # - get_docs_type -> Returns the type of a list
 # - get_docs_length -> Returns the number of elements within a set of documents
@@ -52,6 +52,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def timer(function: Callable) -> Callable:
     '''Decorator to monitor the execution time of a function
 
@@ -72,6 +73,7 @@ def timer(function: Callable) -> Callable:
         return results
 
     return wrapper
+
 
 def data_agnostic(function: Callable, prefered_column: str = "docs", sep: str = ',') -> Callable:
     '''Decorator to manage type casting from and to pd.Series
@@ -283,17 +285,17 @@ def get_docs_type(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame]) -
     return docs_type
 
 
-def get_docs_length(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame], 
+def get_docs_length(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame],
                     first_row: str = 'header', sep: str = ',', nrows: int = 0) -> int:
     '''Returns the number of elements within a set of documents
 
     Args:
         docs (?): Arbitrary document list (Supported types : str ending by .csv, str, list, np.ndarray, pd.Series, pd.DataFrame)
     Kwargs:
-        first_row (str): When working with a pandas dataframe or csv file, specifies how the first line is handled 
+        first_row (str): When working with a pandas dataframe or csv file, specifies how the first line is handled
             -'header', 'data' or 'skip' (default : 'header')
         sep: Separator to use if loading from a csv file
-        nrows (int) : When working with a pandas dataframe or csv file, specifies the maximum number of lines to read 
+        nrows (int) : When working with a pandas dataframe or csv file, specifies the maximum number of lines to read
             (default: 0 we take it all)
     Raises:
         ValueError: if nrows < 0
@@ -384,7 +386,7 @@ def get_new_csv_name(filename: str) -> str:
         raise FileExistsError('Can not find new file name (tried 1000 different names)')
 
 
-def get_generator(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame], chunksize: int =0, 
+def get_generator(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame], chunksize: int =0,
                   first_row: str = 'header', columns: List[str] = ['docs', 'tags'], sep: str = ',', nrows: int = 0, **pandas_args):
     '''Returns a generator given the type of document to process and the chunksize
 
@@ -392,13 +394,13 @@ def get_generator(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame], c
         docs (?): Arbitrary document list (Supported types : str ending by .csv, str, list, np.ndarray, pd.Series, pd.DataFrame)
     Kwargs:
         chunksize (int): if > 0 data is processed by chunks of chunksize size (by default : 0)
-        first_row (str): When working with a pandas dataframe or csv file, specifies how the first line is handled 
+        first_row (str): When working with a pandas dataframe or csv file, specifies how the first line is handled
             -'header', 'data' or 'skip' (default : 'header')
-        columns (list<str>) : When working with a pandas dataframe or csv file, specifies the columns to use, 
-            if first_row != 'header'. Truncate the data if there is too much columns & add some if they are missing 
+        columns (list<str>) : When working with a pandas dataframe or csv file, specifies the columns to use,
+            if first_row != 'header'. Truncate the data if there is too much columns & add some if they are missing
             (default : ['docs', 'tags'])
         sep (str): When working with a pandas dataframe or csv file, specifies the csv separator (default: ',')
-        nrows (int) : When working with a pandas dataframe or csv file, specifies the maximum number of lines to read 
+        nrows (int) : When working with a pandas dataframe or csv file, specifies the maximum number of lines to read
             (default: 0 we take it all)
         pandas_args : When working with a pandas dataframe or csv file, specifies arguments to pass to pandas
     Raises:
@@ -457,7 +459,7 @@ def get_generator(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame], c
     return gen
 
 
-def get_df_generator_from_csv(filename: str, chunksize: int = 0, first_row: str = 'header', 
+def get_df_generator_from_csv(filename: str, chunksize: int = 0, first_row: str = 'header',
                               columns: List[str] = ['docs', 'tags'], sep: str = ',', nrows: int = 0, **pandas_args):
     '''Returns a dataFrame generator by chunk over a file
     If chunksize is 0 -> A one item generator is still returned
@@ -466,13 +468,13 @@ def get_df_generator_from_csv(filename: str, chunksize: int = 0, first_row: str 
         filename (str): Path to the csv file
     Kwargs:
         chunksize (int): If not 0 the pipeline is processed chunkwise and this parameter specifies the chunksize (default : 0)
-        first_row (str): When working with a pandas dataframe or csv file, specifies how the first line is handled 
+        first_row (str): When working with a pandas dataframe or csv file, specifies how the first line is handled
             -'header', 'data' or 'skip' (default : 'header')
-        columns (list<str>) : When working with a pandas dataframe or csv file, specifies the columns to use, 
-            if first_row != 'header'. Truncate the data if there is too much columns & add some if they are missing 
+        columns (list<str>) : When working with a pandas dataframe or csv file, specifies the columns to use,
+            if first_row != 'header'. Truncate the data if there is too much columns & add some if they are missing
             (default : ['docs', 'tags'])
         sep (str): When working with a pandas dataframe or csv file, specifies the csv separator (default: ',')
-        nrows (int) : When working with a pandas dataframe or csv file, specifies the maximum number of lines to read 
+        nrows (int) : When working with a pandas dataframe or csv file, specifies the maximum number of lines to read
             (default: 0 we take it all)
         pandas_args : When working with a pandas dataframe or csv file, specifies arguments to pass to pandas
     Raises:
@@ -546,10 +548,10 @@ def get_columns_to_use(filename: str, first_row: str = 'header', columns: List[s
     Args:
         filename (str): Path to the csv file
     Kwargs:
-        first_row (str): When working with a pandas dataframe or csv file, specifies how the first line is handled 
+        first_row (str): When working with a pandas dataframe or csv file, specifies how the first line is handled
             -'header', 'data' or 'skip' (default : 'header')
         columns (list<str>) : When working with a pandas dataframe or csv file, specifies the columns to use,
-            if first_row != 'header'. Truncate the data if there is too much columns & add some if they are missing 
+            if first_row != 'header'. Truncate the data if there is too much columns & add some if they are missing
             (default : ['docs', 'tags'])
         sep (str): When working with a pandas dataframe or csv file, specifies the csv separator (default: ',')
         file_length (int): Number of lines in the file (can speed up calculations by avoiding a call to get_file_length)
@@ -581,7 +583,7 @@ def get_columns_to_use(filename: str, first_row: str = 'header', columns: List[s
     # Get number of columns
     number_of_columns = len(first_line.split(sep))
 
-    # Manages how the columns are handled 
+    # Manages how the columns are handled
     if first_row == 'header':
         columns_to_use = first_line.split(sep)
     elif number_of_columns > len(columns):
@@ -624,19 +626,19 @@ def get_column_to_be_processed(docs: Union[str, list, np.ndarray, pd.Series, pd.
     Args:
         docs (?): Arbitrary document list (Supported types : str ending by .csv, str, list, np.ndarray, pd.Series, pd.DataFrame)
     Kwargs:
-        prefered_column (str): Default column name to consider as the document container when working 
+        prefered_column (str): Default column name to consider as the document container when working
             with a pandas dataframe or csv file (default: 'docs')
-        first_row (str): When working with a pandas dataframe or csv file, specifies how the first line is handled 
+        first_row (str): When working with a pandas dataframe or csv file, specifies how the first line is handled
             -'header', 'data' or 'skip' (default : 'header')
         columns (list<str>) : When working with a pandas dataframe or csv file, specifies the columns to use,
-            if first_row != 'header'. Truncate the data if there is too much columns & add some if they are missing 
+            if first_row != 'header'. Truncate the data if there is too much columns & add some if they are missing
             (default : ['docs', 'tags'])
         sep (str): When working with a pandas dataframe or csv file, specifies the csv separator (default: ',')
     Returns:
         (str ou int): Index or name of the column to process
     '''
     logger.debug('Calling utils.get_column_to_be_processed')
-    
+
     docs_type = get_docs_type(docs)
 
     if docs_type == 'pd.DataFrame':
@@ -662,7 +664,7 @@ def regroup_data_series(function: Callable, min_nb_data: int = 1000, prefix_text
         function (Callable): Function to which this wrapper is wrapped around /!\ intputs and outputs must be pd.Series, 1 to 1 /!\
     Kwargs:
         min_nb_data (int): Minimum number of rows within the document required to apply this wrapper (default : 1000)
-        prefix_text (str): Prefix to add 
+        prefix_text (str): Prefix to add
     Returns:
         function: Decorated function
     '''
@@ -728,7 +730,7 @@ def regroup_data_df(function: Callable, columns_to_be_processed: Union[list, Non
         min_nb_data (int): Minimum number of rows within the document required to apply this wrapper (default : 1000)
         prefix_text (str): Prefix to add
     Raises:
-        ValueError: If min_nb_data < 0 
+        ValueError: If min_nb_data < 0
     Returns:
         function: Decorated function
     '''
@@ -837,7 +839,7 @@ def get_regex_match_words(words: List[str], case_insensitive: bool = False,
         (str) : Newly generated regex
     '''
     logger.debug('Calling utils.get_regex_match_words')
-    
+
     # Adding characters that are allowed after and before 'words'
     accepted_char_ahead = re.escape(accepted_char_ahead) + '\s'
     accepted_char_behind = re.escape(accepted_char_behind) + '\s'

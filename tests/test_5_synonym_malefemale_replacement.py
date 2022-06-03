@@ -2,12 +2,12 @@
 
 ## Test - unit test of synonym_malefemale_replacement functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -56,7 +56,7 @@ class SynonymTests(unittest.TestCase):
 
 
     def test_remove_gender_synonyms(self):
-        '''Test de la fonction synonym_malefemale_replacement.remove_gender_synonyms'''
+        '''Testing function synonym_malefemale_replacement.remove_gender_synonyms'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None, "serveur/serveur(se), agriculteur (trice) blabla ouvrier/ ouvrière blabla aide apprenti boucher /aide apprentie bouchere"]
         docs_gender_syn_removed = ['Chauffeur   accompagnateur  pers à mob - 5 ans de expérience.', "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", None, None, 'serveur , agriculteur  blabla ouvrier blabla aide apprenti boucher']
 
@@ -65,7 +65,7 @@ class SynonymTests(unittest.TestCase):
 
 
     def test_matching_words(self):
-        '''Test de la fonction synonym_malefemale_replacement.matching_words'''
+        '''Testing function synonym_malefemale_replacement.matching_words'''
         word1 = 'serveur'
         word2 = 'serveuse'
         result =  ('serveur', 'serveuse', 'serveur')
@@ -75,7 +75,7 @@ class SynonymTests(unittest.TestCase):
 
 
     def test_update_synonyms_set(self):
-        '''Test de la fonction synonym_malefemale_replacement.update_synonyms_set'''
+        '''Testing function synonym_malefemale_replacement.update_synonyms_set'''
         synonyms_set = {}
         match = [('serveur', 'serveuse', ''),('boucher','ere',''),('boucher','bouchere','')]
         numligne = 1

@@ -2,17 +2,17 @@
 
 ## Functions to split texts into sentences
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
@@ -46,7 +46,7 @@ def split_sentences(text: str) -> List[str]:
     Returns:
         list<str> : List of sentences
     '''
-    
+
     # We split around \n after singling them out and removing trailing spaces.
     text = re.compile("\s*\n+").sub('\n', text)
     text = re.compile("\s+$").sub('', text)
@@ -84,7 +84,7 @@ def split_sentences_df(df: pd.DataFrame, col: Union[str, int]) -> pd.DataFrame:
 
     Args:
         df (pd.DataFrame): DataFrame containing the texts
-        col (str ou int): Column name where the text is 
+        col (str ou int): Column name where the text is
     Returns:
         pd.DataFrame: New DataFrame with the text split into sentences
     '''

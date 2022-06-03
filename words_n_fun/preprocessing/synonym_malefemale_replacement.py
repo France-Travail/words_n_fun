@@ -3,17 +3,17 @@
 ## Functions to remove gendered synonyms: incredibly specific to the french language
 # TODO : To remove?
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
@@ -37,23 +37,23 @@ logger = logging.getLogger(__name__)
 
 
 SYNONYM_DICT = {
-    'eur': ['euse','se','rice','e','eure'],
-    "ien" : ['ne','nne','e'],
-    "ier" : ['ere','re','e'],
-    "ial" : ['e'],
-    "l" : ['le'],
-    "nt" : ['e'],
-    "at" : ['e'],
-    "f" : ['ve'],
-    "o" : ['a'],
-    "er" : ['ere','ère','euse'],
-    "i" : ['e'],
-    "d" : ['e'],
-    "é" : ['e'],
-    "e" : ['e'],
-    "on" : ['onne'],
-    "is" : ['ise'],
-    "s" : ['s']
+    'eur': ['euse', 'se', 'rice', 'e', 'eure'],
+    "ien": ['ne', 'nne', 'e'],
+    "ier": ['ere', 're', 'e'],
+    "ial": ['e'],
+    "l": ['le'],
+    "nt": ['e'],
+    "at": ['e'],
+    "f": ['ve'],
+    "o": ['a'],
+    "er": ['ere', 'ère', 'euse'],
+    "i": ['e'],
+    "d": ['e'],
+    "é": ['e'],
+    "e": ['e'],
+    "on": ['onne'],
+    "is": ['ise'],
+    "s": ['s']
 }
 
 
@@ -102,7 +102,7 @@ def remove_gender_synonyms(docs: pd.Series) -> pd.Series:
             match_slash_pattern = re.findall(slash_pattern, text)
             match_slash_pattern_BiWords = re.findall(slash_pattern_BiWords, text)
             match_slash_pattern_TriWords = re.findall(slash_pattern_TriWords, text)
-            
+
             # Parenthesis
             if len(match_parenthesis_pattern) != 0:
                 for (word1, word2, word3) in match_parenthesis_pattern:
@@ -137,7 +137,7 @@ def matching_words(word1: str, word2: str) -> Tuple[str, str, str]:
     Args:
         word1 (str)
         word2 (str)
-    
+
     Raises:
         TypeError : If word1 is empty
         TypeError : If word2 is empty
@@ -195,7 +195,7 @@ def update_synonyms_set(synonyms_set: dict, match: list, numligne: int) -> dict:
                 combi = matching_words(word1, word2)
             if combi is not None:
                 if (list(combi)[2]) != "unknown" and combi not in synonyms_set.keys():
-                    synonyms_set[combi] = numligne  
+                    synonyms_set[combi] = numligne
     return synonyms_set
 
 

@@ -24,7 +24,11 @@ from unittest.mock import patch
 
 # Utils libs
 import os
-import spacy
+import sys
+try:
+    import spacy
+except ModuleNotFoundError:
+    pass
 import importlib
 import numpy as np
 import pandas as pd
@@ -65,7 +69,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_notnull(self):
-        '''Test de la fonction basic.notnull'''
+        '''Testing function basic.notnull'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
         docs_series = pd.Series(docs)
         docs_series_copy = pd.Series(docs)
@@ -79,7 +83,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_remove_non_string(self):
-        '''Test de la fonction basic.remove_non_string'''
+        '''Testing function basic.remove_non_string'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
         docs_processed = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", '', '']
 
@@ -88,7 +92,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_get_true_spaces(self):
-        '''Test de la fonction basic.get_true_spaces'''
+        '''Testing function basic.get_true_spaces'''
         docs = ["Ceci est un test", "Ceci est	un autre test 	", "Ceci est encore un	autre test.\n Avec un retour à la ligne :)", 5, None]
         docs_processed = ["Ceci est un test", "Ceci est un autre test  ", "Ceci est encore un autre test.  Avec un retour à la ligne :)", None, None]
 
@@ -98,7 +102,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_to_lower(self):
-        '''Test de la fonction basic.to_lower'''
+        '''Testing function basic.to_lower'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
         docs_lowered = ["chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "je maîtrise 12 langages informatiques dont le c & j'ai le permis b", "coordinateur d'equipe d'action territoriale ", None, None]
         docs_lowered_except_singleLetters = ["chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "je maîtrise 12 langages informatiques dont le C & j'ai le permis B", "coordinateur d'equipe d'action territoriale ", None, None]
@@ -110,7 +114,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_pe_matching(self):
-        '''Test de la fonction basic.pe_matching'''
+        '''Testing function basic.pe_matching'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
         docs_series = pd.Series(docs)
         docs_series_copy = pd.Series(docs)
@@ -125,7 +129,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_remove_punct(self):
-        '''Test de la fonction basic.remove_punct'''
+        '''Testing function basic.remove_punct'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d_Equipe d'Action Territoriale ", 5, None]
         docs_punct_replaced = ["Chauffeur se   accompagnateur trice  pers à mob   5 ans de expérience ", "Je maîtrise 12 langages informatiques dont le C   j ai le Permis B", "Coordinateur d Equipe d Action Territoriale ", None, None]
         docs_punct_replaced_except_parentesis = ["Chauffeur(se)  accompagnateur(trice) pers à mob   5 ans de expérience ", "Je maîtrise 12 langages informatiques dont le C   j ai le Permis B", "Coordinateur d Equipe d Action Territoriale ", None, None]
@@ -139,7 +143,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_trim_string(self):
-        '''Test de la fonction basic.trim_string'''
+        '''Testing function basic.trim_string'''
         docs = ["    Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques \n\n dont le C & j'ai le Permis B\n", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
         docs_processed = ["Chauffeur(se) accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques \n\n dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale", None, None]
 
@@ -149,7 +153,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_remove_leading_and_ending_spaces(self):
-        '''Test de la fonction basic.remove_leading_and_ending_spaces'''
+        '''Testing function basic.remove_leading_and_ending_spaces'''
         docs = [" )test test toto(", "             \t  test \t", 'test avec nouvelle ligne\n', 5, None]
         docs_processed = [")test test toto(", "test", 'test avec nouvelle ligne', None, None]
 
@@ -159,7 +163,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_remove_numeric(self):
-        '''Test de la fonction basic.remove_numeric'''
+        '''Testing function basic.remove_numeric'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
         docs_numeric_replaced = ["Chauffeur(se)  accompagnateur(trice) pers à mob -   ans de expérience.", "Je maîtrise   langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", None, None]
         docs_numeric_removed = ["Chauffeur(se)  accompagnateur(trice) pers à mob -  ans de expérience.", "Je maîtrise  langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", None, None]
@@ -171,7 +175,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_remove_accents(self):
-        '''Test de la fonction basic.remove_accents'''
+        '''Testing function basic.remove_accents'''
         docs = ["tést têst tèst", 5, None]
         docs_accents_removed = ["test test test", None, None]
 
@@ -182,7 +186,7 @@ class BasicTests(unittest.TestCase):
 
     @patch('words_n_fun.preprocessing.basic.remove_accents', side_effect=nominal_remove_accents)
     def test_remove_stopwords(self, RemoveAccentMock):
-        '''Test de la fonction basic.remove_stopwords'''
+        '''Testing function basic.remove_stopwords'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
         docs_stopwords_removed = ["Chauffeur()  accompagnateur(trice) pers  mob - 5 ans  expérience.", "Je maîtrise 12 langages informatiques   C & '  Permis B", "Coordinateur 'Equipe 'Action Territoriale ", None, None]
         docs_stopwords_removed_default = ["Chauffeur()  accompagnateur(trice) pers  mob - 5 ans  expérience.", "Je maîtrise 12 langages informatiques   C & '  Permis B", "Coordinateur 'Equipe 'Action Territoriale ", None, None]
@@ -213,7 +217,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_remove_gender_synonyms(self):
-        '''Test de la fonction basic.remove_gender_synonyms'''
+        '''Testing function basic.remove_gender_synonyms'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None, "serveur/serveur(se), agriculteur (trice) blabla ouvrier/ ouvrière blabla aide apprenti boucher /aide apprentie bouchere"]
         docs_gender_syn_removed = ['Chauffeur   accompagnateur  pers à mob - 5 ans de expérience.', "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", None, None, 'serveur , agriculteur  blabla ouvrier blabla aide apprenti boucher']
 
@@ -221,8 +225,9 @@ class BasicTests(unittest.TestCase):
         self.assertEqual(list(basic.remove_gender_synonyms(pd.Series(docs)).replace({np.nan: None})), docs_gender_syn_removed)
 
 
+    @unittest.skipIf('spacy' not in sys.modules, "Skipping all lemmatizer tests as spacy can't be imported.")
     def test_lemmatize(self):
-        '''Test de la fonction basic.lemmatize'''
+        '''Testing function basic.lemmatize'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "^Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
         docs_lemmatized = ['chauffeur se accompagnateur trice pers à mob 5 an de expérience', 'je maîtris 12 langage informatique dont le c j avoir le permis b', 'chauffeur se accompagnateur trice pers à mob 5 an de expérience', 'coordinateur d equipe d action territorial', None, None]
 
@@ -234,7 +239,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_stemmatize(self):
-        '''Test de la fonction basic.stemmatize'''
+        '''Testing function basic.stemmatize'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
         docs_stemmatized = ['chauffeur(se)  accompagnateur(trice) per à mob - 5 an de expérience.', "je maîtris 12 langag informat dont le c & j'ai le perm b", "coordin d'equip d'action territorial ", None, None]
 
@@ -244,7 +249,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_add_point(self):
-        '''Test de la fonction basic.add_point'''
+        '''Testing function basic.add_point'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
         docs_processed = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B.", "Coordinateur d'Equipe d'Action Territoriale .", None, None]
 
@@ -254,7 +259,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_deal_with_specific_characters(self):
-        '''Test de la fonction basic.deal_with_specific_characters'''
+        '''Testing function basic.deal_with_specific_characters'''
         docs = [".Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", " .Je maîtrise,12 langages, informatiques , dont le C & j'ai le Permis B. ", " . Coordinateur d'Equipe d'Action Territoriale . ", 5, None]
         docs_processed = [" . Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience . ", " . Je maîtrise , 12 langages , informatiques , dont le C & j ' ai le Permis B . ", " . Coordinateur d ' Equipe d ' Action Territoriale . ", None, None]
 
@@ -264,7 +269,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_replace_urls(self):
-        '''Test de la fonction basic.replace_urls'''
+        '''Testing function basic.replace_urls'''
         docs = ["ceci est un text avec une URL:http://www.test.com/zaeaze?pd==sqd", "ahttp://ftp.test.com", "HTTP://toto.fr/dfsdsfo?pfp=zaeazpo",
                 "www.test", "www.test.com/toto", "toto.titi@gmail.com", 5, None]
         docs_url_replaced = ["ceci est un text avec une URL: ", "ahttp://ftp.test.com", " ",
@@ -282,7 +287,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_remove_words(self):
-        '''Test de la fonction basic.remove_words'''
+        '''Testing function basic.remove_words'''
         docs = ["ceci est un test de la fonction remove_words OK", "il s agit d une fonction qui compte les mots dans une serie pandas", "test compte j'ok test", 5, None]
         words_to_remove = ['test', 'toto', 'fonction', 'ok']
         docs_processed = ["ceci est un  de la  remove_words OK", "il s agit d une  qui compte les mots dans une serie pandas", " compte j' ", None, None]
@@ -295,7 +300,7 @@ class BasicTests(unittest.TestCase):
 
 
     def test_fix_text(self):
-        '''Test de la fonction basic.fix_text'''
+        '''Testing function basic.fix_text'''
         docs = ["Ãºnico", "là entités HTML &lt;3", "ＬＯＵＤ　ＮＯＩＳＥＳ", 5, None]
         results = ["único", "là entités HTML <3", "LOUD NOISES", None, None]
         results_2 = ["Ãºnico", "là entités HTML <3", "LOUD NOISES", None, None]

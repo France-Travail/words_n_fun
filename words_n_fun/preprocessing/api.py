@@ -2,17 +2,17 @@
 
 ## Main API of the project
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
@@ -47,7 +47,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Dict of all the available preprocessing features
-# All these transformations are one to one (one input will lead to only input) such that these 
+# All these transformations are one to one (one input will lead to only input) such that these
 # transformations can be chained while preserving the input dataset shape
 # Some advices are specified in configs/pipeline_usage_order.json about how to order these transformations
 # They also act as warnings when some sequences of transformations might have some unexpected results
@@ -55,17 +55,17 @@ USAGE = {
     'notnull': basic.notnull,  # Replaces null values by an empty character
     'remove_non_string': basic.remove_non_string,  # Replaces all non strings by an empty character
     'get_true_spaces': basic.get_true_spaces,  # Replaces all whitespaces by a single space
-    'remove_accents': basic.remove_accents,  # Removes all accents and special characters (ç..) 
+    'remove_accents': basic.remove_accents,  # Removes all accents and special characters (ç..)
     'remove_stopwords': functools.partial(basic.remove_stopwords, opt='all'),  # Removes stopwords
     'trim_string': basic.trim_string,  # Trims spaces: multiple spaces become one
     'remove_leading_and_ending_spaces': basic.remove_leading_and_ending_spaces,  # Removes leading and trailing spaces
     'remove_punct': functools.partial(basic.remove_punct, del_parenthesis=True, replacement_char=' '),  # Replaces all non alpha-numeric characters by spaces
     'remove_punct_except_parenthesis': functools.partial(basic.remove_punct, del_parenthesis=False, replacement_char=' '),   # Replaces all non alpha-numeric characters by spaces EXCEPT parenthesis and slashes
-    'pe_matching': basic.pe_matching,  # Specific one-to-one tokens replacements 
+    'pe_matching': basic.pe_matching,  # Specific one-to-one tokens replacements
     'to_lower': functools.partial(basic.to_lower, threshold_nb_chars=0),  # Transforms the string to lower case
-    'to_lower_except_singleletters': functools.partial(basic.to_lower, threshold_nb_chars=2),  # Transforms longer than 2 characters string to lower cases 
+    'to_lower_except_singleletters': functools.partial(basic.to_lower, threshold_nb_chars=2),  # Transforms longer than 2 characters string to lower cases
     'remove_numeric': functools.partial(basic.remove_numeric, replacement_char=' '),  # Replaces numeric strings by a space
-    'remove_gender_synonyms': basic.remove_gender_synonyms,  # [French] Removes gendered synonyms 
+    'remove_gender_synonyms': basic.remove_gender_synonyms,  # [French] Removes gendered synonyms
     'lemmatize': basic.lemmatize,  # Lemmatizes the document
     'stemmatize': basic.stemmatize,  # Stemmatizes the words of the document
     'add_point': basic.add_point,  # Adds a dot at the end of each line
@@ -83,18 +83,18 @@ DEFAULT_PIPELINE = ['remove_non_string', 'get_true_spaces', 'to_lower_except_sin
 
 
 class PreProcessor():
-    '''Class PreProcessor: 
+    '''Class PreProcessor:
     This class implements fit & transform methods and can therefore be used
     to insert a preprocessing pipeline into a Sklearn pipeline
     '''
 
-    def __init__(self, pipeline: Union[list, None] = DEFAULT_PIPELINE, prefered_column: str = 'docs', 
-                 modify_data: bool = True, chunksize: int = 0, first_row: str = 'header', 
+    def __init__(self, pipeline: Union[list, None] = DEFAULT_PIPELINE, prefered_column: str = 'docs',
+                 modify_data: bool = True, chunksize: int = 0, first_row: str = 'header',
                  columns: list = ['docs', 'tags'], sep: str = ',', nrows: int = 0, **pandas_args) -> None:
         '''Class constructor
         The purpose of a lot of these arguments are to handle the case when the input of the transform method is a path to
         a csv file. While handy, this use case is not advised.
-        
+
         Kwargs:
             pipeline (list): List of transformations to apply (from the USAGE dict) (default: DEFAULT_PIPELINE)
             prefered_column (str): Default column name to consider as the document container when working with a pandas dataframe or csv file (default: 'docs')
@@ -148,7 +148,7 @@ class PreProcessor():
                                    nrows=self.nrows, **self.pandas_args)
 
 
-def get_preprocessor(pipeline: list = DEFAULT_PIPELINE, prefered_column: str = 'docs', modify_data: bool = True, 
+def get_preprocessor(pipeline: list = DEFAULT_PIPELINE, prefered_column: str = 'docs', modify_data: bool = True,
                      chunksize: int = 0, first_row: str = 'header', columns: list = ['docs', 'tags'], sep: str = ',',
                      nrows: int = 0, **pandas_args) -> PreProcessor:
     '''Retourne une instance de PreProcessor
@@ -172,7 +172,7 @@ def get_preprocessor(pipeline: list = DEFAULT_PIPELINE, prefered_column: str = '
                         nrows=nrows, **pandas_args)
 
 
-def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame], 
+def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame],
                         pipeline: list = DEFAULT_PIPELINE, prefered_column: str = 'docs',
                         modify_data: bool = True, chunksize: int = 0, first_row: str = 'header',
                         columns: list = ['docs', 'tags'], sep: str = ',', nrows: int = 0,

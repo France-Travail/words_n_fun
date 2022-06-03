@@ -28,7 +28,7 @@ import re
 import pandas as pd
 from typing import Tuple
 
-from pe_semantic import utils
+from words_n_fun import utils
 
 # Get logger
 import logging

@@ -29,8 +29,8 @@ import nltk
 import pandas as pd
 from typing import Union
 
-from pe_semantic import utils
-from pe_semantic.preprocessing import basic
+from words_n_fun import utils
+from words_n_fun.preprocessing import basic
 
 # Get logger
 import logging

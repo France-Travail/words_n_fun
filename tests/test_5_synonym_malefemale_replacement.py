@@ -27,8 +27,8 @@ import os
 import importlib
 import numpy as np
 import pandas as pd
-from pe_semantic import utils
-from pe_semantic.preprocessing import synonym_malefemale_replacement
+from words_n_fun import utils
+from words_n_fun.preprocessing import synonym_malefemale_replacement
 
 # Disable logging
 import logging

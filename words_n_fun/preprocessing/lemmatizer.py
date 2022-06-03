@@ -26,7 +26,7 @@ import sys
 import requests
 import pandas as pd
 import simplejson as json
-from pe_semantic import utils
+from words_n_fun import utils
 
 # Get logger
 import logging

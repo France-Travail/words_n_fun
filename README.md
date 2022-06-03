@@ -2,9 +2,9 @@
 
 ---
 
-## Why ? 
+## Why ?
 
-The purpose of this project is two folds: 
+The purpose of this project is two folds:
 1. To normalize tools and how tos of semantic analysis projects
 2. To offer end to end pipelines to speed up the time to market of NLP services
 
@@ -15,8 +15,8 @@ The purpose of this project is two folds:
 
 This package used to contain two main parts:
 1. Preprocessing : to speed up the application of numerous preprocessing routines to text data
-2. Modelling : to speed up the developpement of NLP machine learning models 
-The later has been refactored into what is now called the NLP framework. 
+2. Modelling : to speed up the developpement of NLP machine learning models
+The later has been refactored into what is now called the NLP framework.
 
 ### Preprocessing
 
@@ -35,15 +35,15 @@ This feature is controled by the utils.data_agnostic function.
 
 ##### utils.py
 
-Contains utils functions and tools, mainly the data agnostic feature. 
+Contains utils functions and tools, mainly the data agnostic feature.
 
 ##### basic.py
 
-Contains the main data transformation functions. 
+Contains the main data transformation functions.
 
 ##### api.py
 
-Contains the main entry point of the package controlling how one could create an end to end transformation pipeline. 
+Contains the main entry point of the package controlling how one could create an end to end transformation pipeline.
 
 
 ---
@@ -56,7 +56,7 @@ Contains the main entry point of the package controlling how one could create an
 
 - Python 3.X (tests are ran on python 3.8)
 - Set up module dependencies : `pip install -r requirements.txt`
-- Set up the actual module : `pip install -e pe_semantic` or `python setup.py develop` 
+- Set up the actual module : `pip install -e words_n_fun` or `python setup.py develop`
 - Download nltk stopwords data:
 ```python
 import nltk
@@ -71,7 +71,7 @@ Roughly speaking, her is what a basic use case should look like:
 
 ```python
  # Module import
-from pe_semantic.preprocessing import api
+from words_n_fun.preprocessing import api
 
 # Definition of the desired transformation pipeline
 pipeline = ['remove_non_string', 'get_true_spaces', 'to_lower', 'remove_punct',
@@ -106,7 +106,7 @@ output_list = preprocessor.transform(input_list)
 
 ## Best Practices & guidelines
 
-Contributors must try their best to follow these mainstream guidelines : 
+Contributors must try their best to follow these mainstream guidelines :
 1. Module management https://docs.python.org/fr/2/tutorial/modules.html
 2. Python development https://github.com/google/styleguide/blob/gh-pages/pyguide.md, https://www.python.org/dev/peps/pep-0008/
 3. All the preprocessing functions must take pd.Series data as input. The built-in utils.data_agnostic decorator allows the user to send different types of data but the actual function carrying out these transformation should be built around pd.Series.

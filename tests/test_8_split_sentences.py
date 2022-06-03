@@ -26,7 +26,7 @@ from unittest.mock import patch
 import os
 import numpy as np
 import pandas as pd
-from pe_semantic.preprocessing import split_sentences
+from words_n_fun.preprocessing import split_sentences
 
 # Disable logging
 import logging

@@ -2,17 +2,17 @@
 
 ## Tests - unit test of utils functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
@@ -30,14 +30,14 @@ import ntpath
 import numpy as np
 import pandas as pd
 
-import pe_semantic
-from pe_semantic import utils
+import words_n_fun as wnf
+from words_n_fun import utils
 
 # Pour ces tests, on garde le logger pour certains tests
 # Du coup, default to critical
 import logging
 logging.disable(logging.CRITICAL)
-logger = pe_semantic.logger
+logger = wnf.logger
 
 
 class UtilsTests(unittest.TestCase):

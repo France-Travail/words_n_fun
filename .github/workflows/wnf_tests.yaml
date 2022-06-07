@@ -2,11 +2,11 @@ name: Build & Test - Words'n Fun
 on:
   push:
     branches:
-      - 'feature/main'
+      - 'main'
       - 'release/v*'
   pull_request:
     branches:
-      - 'feature/main'
+      - 'main'
       - 'release/v*'
 
 jobs:

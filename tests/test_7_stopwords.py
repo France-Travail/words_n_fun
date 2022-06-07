@@ -2,17 +2,17 @@
 
 ## Test - unit test of stopwords functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
@@ -27,8 +27,8 @@ import os
 import importlib
 import numpy as np
 import pandas as pd
-from pe_semantic import utils
-from pe_semantic.preprocessing import stopwords
+from words_n_fun import utils
+from words_n_fun.preprocessing import stopwords
 
 # Disable logging
 import logging
@@ -56,7 +56,7 @@ class StopwordsTests(unittest.TestCase):
 
 
     def test_remove_stopwords(self):
-        '''Test de la fonction stopwords.remove_stopwords'''
+        '''Testing function stopwords.remove_stopwords'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
         docs_stopwords_removed = ["Chauffeur()  accompagnateur(trice) pers  mob - 5 ans  expérience.", "Je maîtrise 12 langages informatiques   C & '  Permis B", "Coordinateur 'Equipe 'Action Territoriale ", None, None]
         docs_stopwords_removed_default = ["Chauffeur()  accompagnateur(trice) pers  mob - 5 ans  expérience.", "Je maîtrise 12 langages informatiques   C & '  Permis B", "Coordinateur 'Equipe 'Action Territoriale ", None, None]
@@ -85,19 +85,19 @@ class StopwordsTests(unittest.TestCase):
 
 
     def test_stopwords_ascii(self):
-        '''Test de la fonction stopwords.stopwords_ascii'''
+        '''Testing function stopwords.stopwords_ascii'''
         # Vérification du fonctionnement type
         self.assertEqual(type(stopwords.stopwords_ascii()), list)
 
 
     def test_stopwords_nltk(self):
-        '''Test de la fonction stopwords.stopwords_nltk'''
+        '''Testing function stopwords.stopwords_nltk'''
         # Vérification du fonctionnement type
         self.assertEqual(type(stopwords.stopwords_nltk()), list)
         self.assertEqual(type(stopwords.stopwords_nltk(try_update=True)), list)
 
     def test_stopwords_nltk_ascii(self):
-        '''Test de la fonction stopwords.stopwords_nltk_ascii'''
+        '''Testing function stopwords.stopwords_nltk_ascii'''
         # Vérification du fonctionnement type
         self.assertEqual(type(stopwords.stopwords_nltk_ascii()), list)
 

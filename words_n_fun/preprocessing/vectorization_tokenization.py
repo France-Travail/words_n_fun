@@ -2,17 +2,17 @@
 
 ## Vectorization and tokenization functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
@@ -22,7 +22,7 @@
 
 from typing import Tuple
 import pandas as pd
-from pe_semantic import utils
+from words_n_fun import utils
 
 # Get logger
 import logging
@@ -60,17 +60,17 @@ def split_text_into_tokens(docs: pd.Series, nbech: int = 10, seq_size: int = 3, 
         raise ValueError("Step must be > 0")
     if granularity not in ['word', 'char']:
         raise ValueError("granularity must either be word or char")
-    
+
     sequences = pd.Series([None] * docs.shape[0])
     next_items = pd.Series([None] * docs.shape[0])
     for i in range(docs.shape[0]):
         text = docs.iloc[i]
         sequence = []
         next_item = []
-    
+
         if not isinstance(text, str):
             continue
-    
+
         if granularity == "char":
             for j in range(0, len(text) - seq_size, step):
                 if "." not in text[j : j + seq_size]:

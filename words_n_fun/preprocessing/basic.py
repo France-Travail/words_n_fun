@@ -2,17 +2,17 @@
 
 ## Main funtions of the preprocessing API
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
@@ -22,13 +22,13 @@
 # - remove_non_string -> Replaces all non strings by an empty character
 # - get_true_spaces -> Replaces all whitespaces by a single space
 # - to_lower -> Transforms the string to lower case
-# - pe_matching -> Specific one-to-one tokens replacements 
+# - pe_matching -> Specific one-to-one tokens replacements
 # - remove_punct -> Replaces all non alpha-numeric characters by spaces
 # - trim_string -> Trims spaces at the beginning and ending of the string (multiple spaces become one)
 # - remove_numeric -> Replaces numeric strings by a space
 # - remove_stopwords -> Removes stopwords
-# - remove_accents -> Removes all accents and special characters (ç..) 
-# - remove_gender_synonyms -> [French] Removes gendered synonyms 
+# - remove_accents -> Removes all accents and special characters (ç..)
+# - remove_gender_synonyms -> [French] Removes gendered synonyms
 # - lemmatize -> Lemmatizes the document
 # - stemmatize -> Stemmatizes the words of the document
 # - add_point -> Adds a dot at the end of each line
@@ -44,11 +44,11 @@ import pandas as pd
 from typing import Union, List
 from nltk.stem.snowball import FrenchStemmer
 
-from pe_semantic import utils
-from pe_semantic import CustomTqdm as tqdm
-from pe_semantic.preprocessing import stopwords
-from pe_semantic.preprocessing import lemmatizer
-from pe_semantic.preprocessing import synonym_malefemale_replacement
+from words_n_fun import utils
+from words_n_fun import CustomTqdm as tqdm
+from words_n_fun.preprocessing import stopwords
+from words_n_fun.preprocessing import lemmatizer
+from words_n_fun.preprocessing import synonym_malefemale_replacement
 
 
 tqdm.pandas()
@@ -65,7 +65,7 @@ def notnull(docs: pd.Series) -> pd.Series:
 
     Args:
         docs (pd.Series): Documents to process
-    
+
     Returns:
         pd.Series: Modified documents
     '''
@@ -79,7 +79,7 @@ def remove_non_string(docs: pd.Series) -> pd.Series:
 
     Args:
         docs (pd.Series): Documents to process
-    
+
     Returns:
         pd.Series: Modified documents
     '''
@@ -94,7 +94,7 @@ def get_true_spaces(docs: pd.Series) -> pd.Series:
 
     Args:
         docs (pd.Series): Documents to process
-    
+
     Returns:
         pd.Series: Modified documents
     '''
@@ -111,7 +111,7 @@ def to_lower(docs: pd.Series, threshold_nb_chars: int = 0) -> pd.Series:
         docs (pd.Series): Documents to process
     Kwargs:
         threshold_nb_chars (int): Minimum number of characters for a token to be transformed to lowercase (def=0).
-    
+
     Returns:
         pd.Series: Modified documents
     '''
@@ -126,18 +126,18 @@ def to_lower(docs: pd.Series, threshold_nb_chars: int = 0) -> pd.Series:
 @utils.data_agnostic
 @utils.regroup_data_series
 def pe_matching(docs: pd.Series) -> pd.Series:
-    '''Specific one-to-one tokens replacements 
+    '''Specific one-to-one tokens replacements
     For instance 'Permis b' => 'Permisb'
 
     Args:
         docs (pd.Series): Documents to process
-    
+
     Returns:
         pd.Series: Modified documents
     '''
     logger.debug('Calling basic.pe_matching')
     # One can add more rules here
-    regex = utils.get_regex_match_words(['(permis)\s+(b)'], case_insensitive=True, words_as_regex=True) 
+    regex = utils.get_regex_match_words(['(permis)\s+(b)'], case_insensitive=True, words_as_regex=True)
     docs = docs.str.replace(regex, r'\2\3')
     return docs
 
@@ -170,13 +170,13 @@ def trim_string(docs: pd.Series) -> pd.Series:
 
     Args:
         docs (pd.Series): Documents to process
-    
+
     Returns:
         pd.Series: Modified documents
     '''
     logger.debug('Calling basic.trim_string')
     # TODO: better way ?
-    docs = docs.str.replace(r'[\t\f\v ]{2,}', ' ') 
+    docs = docs.str.replace(r'[\t\f\v ]{2,}', ' ')
     docs = remove_leading_and_ending_spaces(docs)
     return docs
 
@@ -188,7 +188,7 @@ def remove_leading_and_ending_spaces(docs: pd.Series) -> pd.Series:
 
     Args:
         docs (pd.Series): Documents to process
-    
+
     Returns:
         pd.Series: Modified documents
     '''
@@ -239,13 +239,13 @@ def remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, 
 @utils.data_agnostic
 @utils.regroup_data_series
 def remove_accents(docs: pd.Series, use_tqdm: bool = True) -> pd.Series:
-    '''Removes all accents and special characters (ç..) 
+    '''Removes all accents and special characters (ç..)
 
     Args:
         docs (pd.Series): Documents to process
     Kwargs:
         use_tqdm (bool): Whether tqdm should be used (default: True)
-    
+
     Returns:
         pd.Series: Modified documents
     '''
@@ -259,17 +259,17 @@ def remove_accents(docs: pd.Series, use_tqdm: bool = True) -> pd.Series:
 @utils.data_agnostic
 @utils.regroup_data_series
 def remove_gender_synonyms(docs: pd.Series) -> pd.Series:
-    '''[French] Removes gendered synonyms 
+    '''[French] Removes gendered synonyms
     # Find occurences such as "male version / female version" (eg: Coiffeur / Coiffeuse)
     # By convention, the male version is kept (in accordance with the lemmatizer)
 
     Args:
         docs (pd.Series): Documents to process
-    
+
     Returns:
         pd.Series: Modified documents
     '''
-    logger.debug('Calling basic.remove_gender_synonyms') 
+    logger.debug('Calling basic.remove_gender_synonyms')
     return synonym_malefemale_replacement.remove_gender_synonyms(docs)
 
 
@@ -281,7 +281,7 @@ def lemmatize(docs: pd.Series) -> pd.Series:
 
     Args:
         docs (pd.Series): Documents to process
-    
+
     Returns:
         pd.Series: Modified documents
     '''
@@ -293,11 +293,11 @@ def lemmatize(docs: pd.Series) -> pd.Series:
 @utils.data_agnostic
 @utils.regroup_data_series
 def stemmatize(docs: pd.Series) -> pd.Series:
-    '''Stemmatizes words in the documents 
+    '''Stemmatizes words in the documents
 
     Args:
         docs (pd.Series): Documents to process
-    
+
     Returns:
         pd.Series: Modified documents
     '''
@@ -314,7 +314,7 @@ def add_point(docs: pd.Series) -> pd.Series:
 
     Args:
         docs (pd.Series): Documents to process
-    
+
     Returns:
         pd.Series: Modified documents
     '''
@@ -345,7 +345,7 @@ def replace_urls(docs: pd.Series, replacement_char: str = ' ', replace_with_doma
         docs (pd.Series): Documents to process
     Kwargs:
         replacement_char (str): Replacement character (def= ' ')
-        replace_with_domain (bool): Replacement_char is overriden and the url is replaced by its domain (def= False) 
+        replace_with_domain (bool): Replacement_char is overriden and the url is replaced by its domain (def= False)
     Returns:
         pd.Series: Modified documents
     '''
@@ -397,7 +397,7 @@ def fix_text(docs: pd.Series, **ftfy_kwargs) -> pd.Series:
         docs (pd.Series): Documents to process
     Kwargs:
         ftfy_kwargs (dict): Kwargs forwarded to ftfy
-    
+
     Returns:
         pd.Series: Modified documents
     '''

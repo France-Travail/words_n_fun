@@ -2,17 +2,17 @@
 
 ## Tests - unit test of api functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
@@ -28,9 +28,9 @@ import functools
 import importlib
 import numpy as np
 import pandas as pd
-from pe_semantic import utils
-from pe_semantic.preprocessing import api
-from pe_semantic.preprocessing import basic
+from words_n_fun import utils
+from words_n_fun.preprocessing import api
+from words_n_fun.preprocessing import basic
 
 # Disable logging
 import logging
@@ -56,7 +56,7 @@ class ApiTests(unittest.TestCase):
 
 
     def test_get_preprocessor(self):
-        '''Test de la fonction api.get_preprocessor'''
+        '''Testing function api.get_preprocessor'''
         # Vérification du fonctionnement type
         self.assertEqual(api.get_preprocessor().__class__, api.PreProcessor)
         self.assertEqual(api.get_preprocessor(pipeline=api.DEFAULT_PIPELINE, prefered_column='docs', modify_data=True, chunksize=0, first_row='header', columns=['docs', 'tags'], sep=',', nrows=0).__class__, api.PreProcessor)
@@ -70,7 +70,7 @@ class ApiTests(unittest.TestCase):
 
 
     def test_preprocess_pipeline(self):
-        '''Test de la fonction api.preprocess_pipeline'''
+        '''Testing function api.preprocess_pipeline'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
         docs_def_pipeline = ['chauffeur accompagn per mob an experient', 'maitris langag informat c permisb', 'coordin equip action territorial', '', '']
         docs_series = pd.Series(["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "Coordinateur d'Equipe d'Action Territoriale ", 5, None])
@@ -260,7 +260,7 @@ class ApiTests(unittest.TestCase):
 
     @patch('logging.Logger._log')
     def test_check_pipeline_order(self, PrintMockLog):
-        '''Test de la fonction api.check_pipeline_order'''
+        '''Testing function api.check_pipeline_order'''
         def test(docs):
             return docs
 
@@ -288,7 +288,7 @@ class ApiTests(unittest.TestCase):
 
 
     def test_listing_count_words(self):
-        '''Test de la fonction api.listing_count_words'''
+        '''Testing function api.listing_count_words'''
         docs = ["ceci est un test de la fonction listing_count_words", "il s agit d une fonction qui compte les mots dans une serie pandas", "test compte ok test"]
         wanted_result = pd.DataFrame([['agit', 1], ['ceci', 1], ['compte', 2], ['d', 1], ['dans', 1], ['de', 1], ['est', 1],
                                       ['fonction', 2], ['il', 1], ['la', 1], ['les', 1], ['listing_count_words', 1], ['mots', 1],
@@ -301,7 +301,7 @@ class ApiTests(unittest.TestCase):
 
 
     def test_list_one_appearance_word(self):
-        '''Test de la fonction api.list_one_appearance_word'''
+        '''Testing function api.list_one_appearance_word'''
         docs = ["ceci est un test de la fonction list_one_appearance_word", "il s agit d une fonction qui compte les mots dans une serie pandas", "test compte ok test"]
         wanted_result = pd.Series(['agit', 'ceci', 'd', 'dans', 'de', 'est', 'il', 'la', 'les', 'list_one_appearance_word', 'mots',
                                    'ok', 'pandas', 'qui', 's', 'serie', 'un'], name='word')

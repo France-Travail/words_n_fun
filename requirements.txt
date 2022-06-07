@@ -12,7 +12,6 @@ tqdm==4.62.2
 requests==2.23.0
 
 # Optionnals - code quality & cie
-mypy==0.782
 flake8==3.7.9
 black==19.10b0
 isort==4.3.21
@@ -24,4 +23,5 @@ coverage==5.3
 markupsafe==2.0.1  # BUG FIX -> https://github.com/aws/aws-sam-cli/issues/3661
 Cython==0.29.24
 spacy==3.2.4
-fr-core-news-sm==3.2.0
+# The following line downloads a spacy model. It can be commented, especially if you don't have any internet access.
+https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.2.0/fr_core_news_sm-3.2.0-py3-none-any.whl

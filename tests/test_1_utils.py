@@ -2,17 +2,17 @@
 
 ## Tests - unit test of utils functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
@@ -30,14 +30,14 @@ import ntpath
 import numpy as np
 import pandas as pd
 
-import pe_semantic
-from pe_semantic import utils
+import words_n_fun as wnf
+from words_n_fun import utils
 
 # Pour ces tests, on garde le logger pour certains tests
 # Du coup, default to critical
 import logging
 logging.disable(logging.CRITICAL)
-logger = pe_semantic.logger
+logger = wnf.logger
 
 
 class UtilsTests(unittest.TestCase):
@@ -55,7 +55,7 @@ class UtilsTests(unittest.TestCase):
     # TODO : dissocier les deux ?
     @patch('logging.Logger._log')
     def test_timer(self, PrintMockLog):
-        '''Test de la fonction utils.timer'''
+        '''Testing function utils.timer'''
         # Definition d'une fonction à tester
         def test(x):
             return x**2
@@ -91,7 +91,7 @@ class UtilsTests(unittest.TestCase):
 
 
     def test_data_agnostic(self):
-        '''Test de la fonction utils.data_agnostic'''
+        '''Testing function utils.data_agnostic'''
         # Definition d'une fonction à décorer
         def test_function(docs):
             if type(docs) != pd.Series: raise TypeError('')
@@ -156,7 +156,7 @@ class UtilsTests(unittest.TestCase):
 
 
     def test_data_agnostic_input(self):
-        '''Test de la fonction utils.data_agnostic_input'''
+        '''Testing function utils.data_agnostic_input'''
         # Definition d'une fonction à décorer
         def test_function(docs):
             if type(docs) != pd.Series: raise TypeError('')
@@ -196,7 +196,7 @@ class UtilsTests(unittest.TestCase):
 
 
     def test_get_docs_type(self):
-        '''Test de la fonction utils.get_docs_type'''
+        '''Testing function utils.get_docs_type'''
         test_str = "ceci est un test"
         test_list = ["ceci est un test", 5, None]
         test_np_array = np.array(["ceci est un test", 5, None])
@@ -219,7 +219,7 @@ class UtilsTests(unittest.TestCase):
 
 
     def test_get_docs_length(self):
-        '''Test de la fonction utils.get_docs_length'''
+        '''Testing function utils.get_docs_length'''
         test_str = "ceci est un test"
         test_list = ["ceci est un test", 5, None]
         test_np_array = np.array(["ceci est un test", 5, None])
@@ -247,7 +247,7 @@ class UtilsTests(unittest.TestCase):
         self.assertEqual(utils.get_docs_length(test_file_comma, first_row='skip', sep=',', nrows=30), 9)
 
     def test_get_file_length(self):
-        '''Test de la fonction utils.file_length'''
+        '''Testing function utils.file_length'''
         input_file_1 = "./testing_file.csv"
         expected_result_1 = 10
         input_file_2 = "./testing_file6.csv"
@@ -263,7 +263,7 @@ class UtilsTests(unittest.TestCase):
 
 
     def test_get_new_csv_name(self):
-        '''Test de la fonction utils.get_new_csv_name'''
+        '''Testing function utils.get_new_csv_name'''
         input_file = "./testing_file.csv"
 
         # Vérification du fonctionnement type
@@ -273,7 +273,7 @@ class UtilsTests(unittest.TestCase):
 
 
     def test_get_generator(self):
-        '''Test de la fonction utils.get_generator'''
+        '''Testing function utils.get_generator'''
         test_str = 'test'
         result_str = 'test'
         test_list = ['test', 'test 2']
@@ -317,7 +317,7 @@ class UtilsTests(unittest.TestCase):
 
 
     def test_get_df_generator_from_csv(self):
-        '''Test de la fonction utils.get_df_generator_from_csv'''
+        '''Testing function utils.get_df_generator_from_csv'''
         input_file =  "./testing_file.csv"
         expected_result = [pd.DataFrame( [["col 1 line 1", "col 2 line 1"]], columns=['col 1', 'col 2'], index=[0]),
                            pd.DataFrame( [["col 1 line 2", "col 2 line 2"]], columns=['col 1', 'col 2'], index=[1]),
@@ -423,7 +423,7 @@ class UtilsTests(unittest.TestCase):
 
 
     def test_get_columns_to_use(self):
-        '''Test de la fonction utils.get_columns_to_use'''
+        '''Testing function utils.get_columns_to_use'''
         test_file =  "./testing_file.csv"
         test_file_one_row =  "./testing_file2.csv"
         empty_file = "./testing_file3.csv"
@@ -451,7 +451,7 @@ class UtilsTests(unittest.TestCase):
 
 
     def test_get_new_column_name(self):
-        '''Test de la fonction utils.get_new_column_name'''
+        '''Testing function utils.get_new_column_name'''
         docs_column = ['test', 'test2']
         processed_column = 'test2'
         new_column = 'test2_processed'
@@ -465,7 +465,7 @@ class UtilsTests(unittest.TestCase):
 
 
     def test_get_column_to_be_processed(self):
-        '''Test de la fonction utils.get_column_to_be_processed'''
+        '''Testing function utils.get_column_to_be_processed'''
         test_str = 'test'
         result_str = 'docs'
         test_list = ['test', 'test 2']
@@ -500,7 +500,7 @@ class UtilsTests(unittest.TestCase):
 
 
     def test_regroup_data_series(self):
-        '''Test de la fonction utils.regroup_data_series'''
+        '''Testing function utils.regroup_data_series'''
         # Definition d'une fonction à décorer
         def test_function(docs):
             if type(docs) != pd.Series: raise TypeError('')
@@ -524,7 +524,7 @@ class UtilsTests(unittest.TestCase):
 
 
     def test_regroup_data_df(self):
-        '''Test de la fonction utils.regroup_data_df'''
+        '''Testing function utils.regroup_data_df'''
         # Definition d'une fonction à wrapper
         def test_function_1(df):
             if type(df) != pd.DataFrame: raise TypeError('')
@@ -555,7 +555,7 @@ class UtilsTests(unittest.TestCase):
 
 
     def test_get_regex_match_words(self):
-        '''Test de la fonction utils.get_regex_match_words'''
+        '''Testing function utils.get_regex_match_words'''
         words = ['test?', 'toto']
         expected_result = '(?:^|(?<=[\\.\\?!,;:\\(\\)"\'/<>=\\[\\]\\{\\}\\~\\*\\s]))(test\\?|toto)(?=[\\.\\?!,;:\\(\\)"\'/<>=\\[\\]\\{\\}\\~\\*\\s]|$)'
         expected_result_2 = '(?i)(?:^|(?<=[\\.\\?!,;:\\(\\)"\'/<>=\\[\\]\\{\\}\\~\\*\\s]))(test\\?|toto)(?=[\\.\\?!,;:\\(\\)"\'/<>=\\[\\]\\{\\}\\~\\*\\s]|$)'

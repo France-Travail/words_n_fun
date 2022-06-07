@@ -21,26 +21,26 @@ from setuptools import setup
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'version.txt'), 'r') as version_file:
     version = version_file.read().strip()
 
-version = os.getenv('VERSION') or version+'-local'
+version = os.getenv('VERSION') or f"{version}-local"
 
 # Setup
 setup(
     name='words_n_fun',
     version=version,
-    packages=['pe_semantic', 'pe_semantic.preprocessing'],
+    packages=['words_n_fun', 'words_n_fun.preprocessing'],
     license='Aucune',
     author='Agence Data Services PE Nantes',
     description="Semantic library of the Data Services agency",
     platforms=['windows', 'linux'],
     package_data={
-        'pe_semantic': ['configs/*.json', 'nltk_data/corpora/stopwords/french']
+        'words_n_fun': ['configs/*.json', 'nltk_data/corpora/stopwords/french']
     },
     include_package_data=True,
     install_requires=[
         'pandas==1.3.5',
         'numpy==1.19.5',
         'nltk>=3.4.5,<3.6',
-        'tqdm==4.62.2',  #https://github.com/tqdm/tqdm/issues/780
+        'tqdm==4.62.2',  # https://github.com/tqdm/tqdm/issues/780
         'simplejson>=3.17.0,<3.17.3',
         'requests>=2.23.0,<2.25.1',
         'ftfy>=5.8,<6.0',
@@ -48,4 +48,5 @@ setup(
     extras_require={
         "lemmatizer": ["spacy==3.2.4", "markupsafe==2.0.1", "Cython==0.29.24", "fr-core-news-sm==3.2.0"]
     }
+    # pip install words_n_fun || pip install words_n_fun[lemmatizer]
 )

@@ -1,7 +1,5 @@
 name: Linter - Words'n Fun
-on:
-  push
-  pull_request
+on: [push, pull_request]
 
 jobs:
   build:

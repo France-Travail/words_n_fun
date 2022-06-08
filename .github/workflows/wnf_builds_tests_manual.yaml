@@ -1,13 +1,5 @@
-name: Build & Test - Words'n Fun
-on:
-  push:
-    branches:
-      - 'main'
-      - 'release/v*'
-  pull_request:
-    branches:
-      - 'main'
-      - 'release/v*'
+name: Build & Tests - Words'n Fun - Manual
+on: workflow_dispatch
 
 jobs:
   build:

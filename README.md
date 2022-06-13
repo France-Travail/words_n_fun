@@ -8,6 +8,12 @@
 
 ---
 
+# Licence
+
+This project is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE V3.0. Please check the LICENSE file.
+
+---
+
 ## Why ?
 
 The purpose of this project is two folds:

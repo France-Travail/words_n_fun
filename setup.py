@@ -12,7 +12,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#
+
 import os
 from setuptools import setup
 
@@ -35,11 +35,12 @@ setup(
     name='words_n_fun',
     version=version,
     packages=['words_n_fun', 'words_n_fun.preprocessing'],
-    license="GNU Affero General Public License",
+    license='AGPL-3.0',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Agence Data Services PE Nantes',
     description="Semantic library of the Data Services agency",
+    url="https://github.com/OSS-Pole-Emploi/words_n_fun",
     platforms=['windows', 'linux'],
     package_data={
         'words_n_fun': ['configs/*.json', 'nltk_data/corpora/stopwords/french']

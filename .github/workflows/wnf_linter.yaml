@@ -1,5 +1,13 @@
 name: Linter - Words'n Fun
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - 'version.txt'
+      - '.github/workflows/**'
+  pull_request:
+    paths-ignore:
+      - 'version.txt'
+      - '.github/workflows/**'
 
 jobs:
   build:

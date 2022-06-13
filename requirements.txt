@@ -23,5 +23,5 @@ coverage==5.3
 markupsafe==2.0.1  # BUG FIX -> https://github.com/aws/aws-sam-cli/issues/3661
 Cython==0.29.24
 spacy==3.2.4
-# The following line downloads a spacy model. It can be commented, especially if you don't have any internet access.
-https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.2.0/fr_core_news_sm-3.2.0-py3-none-any.whl
+# The following line downloads a spacy model. It can be uncommented to use the lemmatizer, but you'll need an internet access to download it.
+# https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.2.0/fr_core_news_sm-3.2.0-py3-none-any.whl

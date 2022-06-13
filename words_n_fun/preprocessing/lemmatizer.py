@@ -36,15 +36,16 @@ logger = logging.getLogger(__name__)
 # Spacy has to be installed for the lemmatizer to work
 # Since it is an optional dependency, a warning is raised if a call to the lemmatizer is done
 if 'spacy' in sys.modules:
-    LEMMATIZER_AVAILABLE = True
     import spacy
     try:
         if not spacy.util.is_package("fr_core_news_sm"):
             logger.info("Downloading fr_core_news_sm")
             spacy.cli.download('fr_core_news_sm')
         spacy_model = spacy.load('fr_core_news_sm')
+        LEMMATIZER_AVAILABLE = True
     except:
         spacy_model = None
+        LEMMATIZER_AVAILABLE = False
         logger.error("Unexpected error downloading or loading spacy model fr_core_news_sm")
 else:
     LEMMATIZER_AVAILABLE = False

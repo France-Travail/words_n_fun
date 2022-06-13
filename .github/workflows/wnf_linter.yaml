@@ -4,10 +4,16 @@ on:
     paths-ignore:
       - 'version.txt'
       - '.github/workflows/**'
+      - '*.md'
+      - 'LICENSE'
+      - 'Makefile'
   pull_request:
     paths-ignore:
       - 'version.txt'
       - '.github/workflows/**'
+      - '*.md'
+      - 'LICENSE'
+      - 'Makefile'
 
 jobs:
   build:

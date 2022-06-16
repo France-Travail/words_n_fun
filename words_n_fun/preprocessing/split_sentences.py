@@ -23,18 +23,16 @@
 
 
 import re
+import logging
 import pandas as pd
 from itertools import chain
 from typing import Union, List
 
 from words_n_fun import CustomTqdm as tqdm
 
-
 tqdm.pandas()
 
 # Get logger
-import logging
-
 logger = logging.getLogger(__name__)
 
 

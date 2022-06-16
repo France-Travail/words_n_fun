@@ -23,9 +23,7 @@
 
 
 import sys
-import requests
 import pandas as pd
-import simplejson as json
 from words_n_fun import utils
 
 # Get logger
@@ -51,6 +49,7 @@ else:
     LEMMATIZER_AVAILABLE = False
     logger.warning("Spacy has not been found, lemmatizer features are not available.")
     logger.warning("To use it, you must install spacy. For instance: pip install words-n-fun[lemmatizer]")
+
 
 @utils.data_agnostic
 @utils.regroup_data_series
@@ -95,7 +94,6 @@ def lemmatize(docs: pd.Series) -> pd.Series:
             lemmatized.append(None)
 
     return pd.Series(lemmatized)
-
 
 
 if __name__ == '__main__':

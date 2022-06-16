@@ -386,7 +386,7 @@ def get_new_csv_name(filename: str) -> str:
         raise FileExistsError('Can not find new file name (tried 1000 different names)')
 
 
-def get_generator(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame], chunksize: int =0,
+def get_generator(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame], chunksize: int = 0,
                   first_row: str = 'header', columns: List[str] = ['docs', 'tags'], sep: str = ',', nrows: int = 0, **pandas_args):
     '''Returns a generator given the type of document to process and the chunksize
 
@@ -429,7 +429,7 @@ def get_generator(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame], c
                 (i * chunksize, min((i + 1) * chunksize, len(docs)))
                 for i in range(1 + ((len(docs) - 1) // chunksize))
             ]
-            gen = (docs[chunk_limit[0] : chunk_limit[1]] for chunk_limit in chunks_limits)
+            gen = (docs[chunk_limit[0]: chunk_limit[1]] for chunk_limit in chunks_limits)
 
     elif docs_type == 'np.ndarray':
         if chunksize == 0 or chunksize >= len(docs):
@@ -440,7 +440,7 @@ def get_generator(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame], c
                 for i in range(1 + ((len(docs) - 1) // chunksize))
             ]
             gen = (
-                docs[chunk_limit[0] : chunk_limit[1]] for chunk_limit in chunks_limits
+                docs[chunk_limit[0]: chunk_limit[1]] for chunk_limit in chunks_limits
             )
 
     elif docs_type in ('pd.Series', 'pd.DataFrame'):
@@ -452,7 +452,7 @@ def get_generator(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame], c
                 for i in range(1 + ((docs.shape[0] - 1) // chunksize))
             ]
             gen = (
-                docs.iloc[chunk_limit[0] : chunk_limit[1]]
+                docs.iloc[chunk_limit[0]: chunk_limit[1]]
                 for chunk_limit in chunks_limits
             )
 
@@ -565,7 +565,7 @@ def get_columns_to_use(filename: str, first_row: str = 'header', columns: List[s
     logger.debug('Calling utils.get_columns_to_use')
     if first_row not in ['header', 'data', 'skip']:
         raise ValueError("first_row must either be 'header', 'data' or 'skip'.")
-    if file_length != None and file_length < 0:
+    if file_length is not None and file_length < 0:
         raise ValueError('file_length must be >= 0')
     if not os.path.isfile(filename):
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), filename)
@@ -595,7 +595,7 @@ def get_columns_to_use(filename: str, first_row: str = 'header', columns: List[s
     return columns_to_use
 
 
-def get_new_column_name(df_column: list, processed_column: Union[str, int], suffix: str ='_processed') -> str:
+def get_new_column_name(df_column: list, processed_column: Union[str, int], suffix: str = '_processed') -> str:
     '''Returns a new column name from a list of existing columns and a column name
 
     Args:
@@ -738,7 +738,7 @@ def regroup_data_df(function: Callable, columns_to_be_processed: Union[list, Non
     if min_nb_data <= 0:
         raise ValueError('"min_nb_data" must be > 0.')
     # If no prefix supplied we default to __name__
-    if prefix_text == None:
+    if prefix_text is None:
         try:
             prefix_text = f'{function.__name__} - '
         # Might be triggered with partials (functools.partial)
@@ -760,7 +760,7 @@ def regroup_data_df(function: Callable, columns_to_be_processed: Union[list, Non
         # If there is not enough data, the wrapper is discarded and the function returned as is
         if df.shape[0] < min_nb_data:
             return function(df, *args, **kwargs)
-        if columns_to_be_processed == None:
+        if columns_to_be_processed is None:
             final_columns_to_be_processed = list(df.columns)
         else:
             final_columns_to_be_processed = columns_to_be_processed
@@ -805,6 +805,7 @@ def regroup_data_df(function: Callable, columns_to_be_processed: Union[list, Non
         return df
 
     return wrapper
+
 
 def get_regex_match_words(words: List[str], case_insensitive: bool = False,
                           accepted_char_ahead: str = '.?!,;:()"\'/<>=[]{}~*',

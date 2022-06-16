@@ -39,6 +39,7 @@
 
 
 import ftfy
+import logging
 import unicodedata
 import pandas as pd
 from typing import Union, List
@@ -50,12 +51,9 @@ from words_n_fun.preprocessing import stopwords
 from words_n_fun.preprocessing import lemmatizer
 from words_n_fun.preprocessing import synonym_malefemale_replacement
 
-
 tqdm.pandas()
 
 # Get logger
-import logging
-
 logger = logging.getLogger(__name__)
 
 

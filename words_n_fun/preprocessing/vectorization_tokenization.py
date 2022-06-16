@@ -73,8 +73,8 @@ def split_text_into_tokens(docs: pd.Series, nbech: int = 10, seq_size: int = 3, 
 
         if granularity == "char":
             for j in range(0, len(text) - seq_size, step):
-                if "." not in text[j : j + seq_size]:
-                    sequence.append(text[j : j + seq_size])
+                if "." not in text[j: j + seq_size]:
+                    sequence.append(text[j: j + seq_size])
                     next_item.append(text[j + seq_size])
                 if len(sequence) >= nbech:
                     break
@@ -82,12 +82,12 @@ def split_text_into_tokens(docs: pd.Series, nbech: int = 10, seq_size: int = 3, 
         elif granularity == "word":
             words = text.split()
             for j in range(0, len(words) - seq_size, step):
-                sequence.append(words[j : j + seq_size])
+                sequence.append(words[j: j + seq_size])
                 next_item.append(words[j + seq_size])
                 if len(sequence) >= nbech:
                     break
                 if (len(words) - seq_size - 1) % step != 0:
-                    sequence.append(words[len(words) - seq_size : len(words)])
+                    sequence.append(words[len(words) - seq_size: len(words)])
                     next_item.append(words[len(words) - 1])
         sequences.iloc[i] = sequence
         next_items.iloc[i] = next_item

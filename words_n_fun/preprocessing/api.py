@@ -70,8 +70,8 @@ USAGE = {
     'stemmatize': basic.stemmatize,  # Stemmatizes the words of the document
     'add_point': basic.add_point,  # Adds a dot at the end of each line
     'add_space_around_special': basic.deal_with_specific_characters,  # Ads spaces before and after some punctuations (, : ; .)
-    'replace_urls' : basic.replace_urls,  # Replaces URLs by spaces
-    'replace_urls_with_domains' : functools.partial(basic.replace_urls, replace_with_domain=True),  # Replaces URLs by their domain part
+    'replace_urls': basic.replace_urls,  # Replaces URLs by spaces
+    'replace_urls_with_domains': functools.partial(basic.replace_urls, replace_with_domain=True),  # Replaces URLs by their domain part
     'fix_text': basic.fix_text,  # Fixes numerous inconsistencies within a text (via ftfy)
 }
 
@@ -116,8 +116,8 @@ class PreProcessor():
             raise ValueError('first_row parameter must be one of header, data, or skip')
         if nrows < 0:
             raise ValueError('nrows parameter must be >= 0')
-        if modify_data != True:
-            logger.warning("modify data must be True for the preprocessor class to remain Sklearn compatible")
+        if not modify_data:
+            logger.warning("modify_data must be True for the preprocessor class to remain Sklearn compatible")
         # Set properties
         self.pipeline = pipeline
         self.prefered_column = prefered_column
@@ -322,7 +322,7 @@ def check_pipeline_order(pipeline: list) -> None:
             for before_function in order_dict['before'].keys():
                 # If the function before_function exists in the pipeline before current_function, a warning is raised
                 if min([len(pipeline)] + [i for i, _ in enumerate(pipeline) if _ == before_function]) < current_number:
-                    if order_dict['before'][before_function] != None:
+                    if order_dict['before'][before_function] is not None:
                         logger.warning(f"/!\ /!\ /!\: {order_dict['before'][before_function]}")
                     # usage_order is cleared to avoid duplicate warnings
                     try:
@@ -336,7 +336,7 @@ def check_pipeline_order(pipeline: list) -> None:
             for after_function in order_dict['after'].keys():
                 # If the function after_function exists in the pipeline after current_function, a warning is raised
                 if max([0] + [i for i, _ in enumerate(pipeline) if _ == after_function]) > current_number:
-                    if order_dict['after'][after_function] != None:
+                    if order_dict['after'][after_function] is not None:
                         logger.warning(f"/!\ /!\ /!\: {order_dict['after'][after_function]}")
                     # usage_order is cleared to avoid duplicate warnings
                     try:

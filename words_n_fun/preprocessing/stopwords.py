@@ -64,9 +64,9 @@ STOPWORDS = ["a", "abord", "absolument", "afin", "ah", "ai", "aie", "aient", "ai
              "douzième", "dring", "droite", "du", "duquel", "durant", "dès", "début", "désormais", "e", "effet",
              "egale", "egalement", "egales", "eh", "elle", "elle-même", "elles", "elles-mêmes", "en", "encore", "enfin",
              "entre", "envers", "environ", "es", "essai", "est", "et", "etant", "etc", "etre", "eu", "eue", "eues",
-             "euh", "eurent", "eus", "eusse", "eussent", "eusses",  "eussiez", "eussions", "eut", "eux", "eux-mêmes",
+             "euh", "eurent", "eus", "eusse", "eussent", "eusses", "eussiez", "eussions", "eut", "eux", "eux-mêmes",
              "exactement", "excepté", "extenso", "exterieur", "eûmes", "eût", "eûtes", "f", "fais", "faisaient",
-             "faisant", "fait", "faites", "façon", "feront", "fi", "flac", "floc",  "fois", "font", "force", "furent",
+             "faisant", "fait", "faites", "façon", "feront", "fi", "flac", "floc", "fois", "font", "force", "furent",
              "fus", "fusse", "fussent", "fusses", "fussiez", "fussions", "fut", "fûmes", "fût", "fûtes", "g", "gens",
              "h", "ha", "haut", "hein", "hem", "hep", "hi", "ho", "holà", "hop", "hormis", "hors", "hou", "houp", "hue",
              "hui", "huit", "huitième", "hum", "hurrah", "hé", "hélas", "i", "ici", "il", "ils", "importe", "j", "je",
@@ -151,11 +151,9 @@ def remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, 
     if opt in usage.keys():
         stopwords_list = list(usage.get(opt))
     else:
-        logger.warning(
-            f"Option {opt} does not exist " +
-            f"Existing options are : {', '.join(usage.keys())}. " +
-            "By default, all the stopwords are used."
-        )
+        logger.warning(f"Option {opt} does not exist.")
+        logger.warning(f"Existing options are : {', '.join(usage.keys())}. ")
+        logger.warning("By default, all the stopwords are used.")
         stopwords_list = STOPWORDS
     # Add custom set
     if len(set_to_add) != 0:

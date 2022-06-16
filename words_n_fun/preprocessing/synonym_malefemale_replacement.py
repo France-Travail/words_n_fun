@@ -69,19 +69,19 @@ def remove_gender_synonyms(docs: pd.Series) -> pd.Series:
     '''
     logger.debug('Calling synonym_malefemale_replacement.getSynonyms')
 
-    ## Preprocessing
+    # Preprocessing
     docs = docs.str.replace('(\s*)/(\s*)', '/')  # Removes whitespaces around "/"
     docs = docs.str.replace('(\s*)\((\s*)', '(')  # Removes potential whitespaces before "("
     docs = docs.str.replace('\)', ') ')  # Add a space after ")"
 
-    ## Set match paterns
+    # Set match paterns
     parenthesis_pattern = r"([\w\-]+)\(([\w\-]+)\)()"  # Case :  serveur(se)
     slash_pattern = r"([\w\-]+)/([\w\-]+)(\([\w\-]+\))?"  # Case: serveur/serveuse and serveur/serveur(se)
     slash_pattern_BiWords = r"([\w\-]+\s[\w\-]+)/([\w\-]+\s[\w\-]+)()"  # Case: apprenti boucher/apprentie bouchere
     slash_pattern_TriWords = r"([\w\-]+\s[\w\-]+\s[\w\-]+)/([\w\-]+\s[\w\-]+\s[\w\-]+)()"  # Case:  aide apprenti boucher/aide apprentie bouchere
     match_pattern = [parenthesis_pattern, slash_pattern, slash_pattern_BiWords, slash_pattern_TriWords]
 
-    ## Creating synonyms listings
+    # Creating synonyms listings
     synonyms_set = {}
     for i in range(len(docs)):  # For every document
         for match in match_pattern:  # ... and for every match ...
@@ -90,7 +90,7 @@ def remove_gender_synonyms(docs: pd.Series) -> pd.Series:
             if isinstance(text, str):
                 synonyms_set = update_synonyms_set(synonyms_set, re.findall(match, text), i)
 
-    ## Update the  documents
+    # Update the documents
     for i in range(len(docs)):  # For every document
         text = docs.iloc[i]
 
@@ -151,7 +151,6 @@ def matching_words(word1: str, word2: str) -> Tuple[str, str, str]:
         - If the end of word1 exists in the dictionnary and the end of word2 matches one of its values and the 4 first letters of both word1 and word 2 are identical: eg serveur/serveuse
         - If the end of word1 exists in the dictionnary and the end of word2 matches one of its values and the length of word2 is lesser or equal than the length of word1: eg conducteur(trice)
     '''
-
     if len(word1) == 0:
         raise TypeError('Word1 is empty.')
     if len(word2) == 0:
@@ -161,11 +160,11 @@ def matching_words(word1: str, word2: str) -> Tuple[str, str, str]:
     for word1_end in SYNONYM_DICT.keys():
         for word2_end in SYNONYM_DICT[word1_end]:
             if combi is None:
-                if word1[-len(word1_end) :] == word1_end:
+                if word1[-len(word1_end):] == word1_end:
                     if (
                         (word2 == word2_end)
-                        or (word2[-len(word2_end) :] == word2_end and word1[:4] == word2[:4])
-                        or (word2[-len(word2_end) :] == word2_end and len(word2) <= (len(word2_end) + 2))
+                        or (word2[-len(word2_end):] == word2_end and word1[:4] == word2[:4])
+                        or (word2[-len(word2_end):] == word2_end and len(word2) <= (len(word2_end) + 2))
                     ):
                         combi = (word1, word2, word1)
     if combi is None:

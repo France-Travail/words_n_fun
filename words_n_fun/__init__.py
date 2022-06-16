@@ -22,6 +22,7 @@ ch.setFormatter(formatter)
 # Add handler to the logger
 logger.addHandler(ch)
 
+
 ## Manage tqdm
 # On créé une classe à utiliser à la place de celle de tqdm
 # def level: INFO

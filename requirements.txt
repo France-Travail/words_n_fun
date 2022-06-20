@@ -22,6 +22,6 @@ coverage==5.3
 # Has to be installed last / optionnal to use spacy lemmatizer
 markupsafe==2.0.1  # BUG FIX -> https://github.com/aws/aws-sam-cli/issues/3661
 Cython==0.29.24
-spacy==3.2.4
+spacy==3.3.1
 # The following line downloads a spacy model. It can be commented if you don't have an internet access to download it, but lemmatizer features won't work.
 https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.2.0/fr_core_news_sm-3.2.0-py3-none-any.whl

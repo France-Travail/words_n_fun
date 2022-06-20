@@ -229,7 +229,7 @@ class BasicTests(unittest.TestCase):
     def test_lemmatize(self):
         '''Testing function basic.lemmatize'''
         docs = ["Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Je maîtrise 12 langages informatiques dont le C & j'ai le Permis B", "^Chauffeur(se)  accompagnateur(trice) pers à mob - 5 ans de expérience.", "Coordinateur d'Equipe d'Action Territoriale ", 5, None]
-        docs_lemmatized = ['chauffeur se accompagnateur trice pers à mob 5 an de expérience', 'je maîtris 12 langage informatique dont le c j avoir le permis b', 'chauffeur se accompagnateur trice pers à mob 5 an de expérience', 'coordinateur d equipe d action territorial', None, None]
+        docs_lemmatized = ['chauffeur se accompagnateur trice pers à mob 5 an de expérience', 'je maîtrise 12 langage informatique dont le c j avoir le permettre b', 'chauffeur se accompagnateur trice pers à mob 5 an de expérience', 'coordinateur d equipe d action territorial', None, None]
 
         # On check seulement si model lemmatizer installé
         if spacy.util.is_package("fr_core_news_sm"):

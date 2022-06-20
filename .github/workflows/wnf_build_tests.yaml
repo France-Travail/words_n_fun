@@ -80,3 +80,24 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --ignore=E501 --statistics
       - name: Test WNF
         run: nosetests -c nose_setup_coverage.cfg tests
+
+  build-local:
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8"]
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install package & dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python setup.py develop
+      - name: Test WNF
+        run: nosetests -c nose_setup_coverage.cfg tests

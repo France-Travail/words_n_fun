@@ -8,18 +8,15 @@
 
 ---
 
-# Licence
-
-This project is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE V3.0. Please check the LICENSE file.
-
----
-
-## Why ?
-
 The purpose of this project is two folds:
 1. To normalize tools and how tos of semantic analysis projects
 2. To offer end to end pipelines to speed up the time to market of NLP services
 
+---
+
+# Licence
+
+This project is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE V3.0. Please check the LICENSE file.
 
 ---
 

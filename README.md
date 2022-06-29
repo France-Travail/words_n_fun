@@ -6,8 +6,6 @@
 
 # WORDS N FUN : Semantic analysis module built
 
----
-
 The purpose of this project is two folds:
 1. To normalize tools and how tos of semantic analysis projects
 2. To offer end to end pipelines to speed up the time to market of NLP services

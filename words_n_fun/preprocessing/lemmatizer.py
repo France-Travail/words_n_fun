@@ -22,12 +22,13 @@
 # - lemmatize -> Lemmatizes text
 
 
+# Get logger
+import logging
 import sys
+
 import pandas as pd
 from words_n_fun import utils
 
-# Get logger
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -76,8 +77,8 @@ def lemmatize(docs: pd.Series) -> pd.Series:
     docs = (
         pd.Series(docs)
         .str.lower()
-        .str.replace('\W', ' ')
-        .str.replace(r"([0-9]+(\.[0-9]+)?)", r" \1 ")
+        .str.replace('\W', ' ', regex=True)
+        .str.replace(r"([0-9]+(\.[0-9]+)?)", r" \1 ", regex=True)
         .str.replace('\s+', ' ', regex=True)
         .str.strip()
     )

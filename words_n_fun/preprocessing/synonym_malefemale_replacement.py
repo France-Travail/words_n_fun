@@ -70,9 +70,9 @@ def remove_gender_synonyms(docs: pd.Series) -> pd.Series:
     logger.debug('Calling synonym_malefemale_replacement.getSynonyms')
 
     # Preprocessing
-    docs = docs.str.replace('(\s*)/(\s*)', '/')  # Removes whitespaces around "/"
-    docs = docs.str.replace('(\s*)\((\s*)', '(')  # Removes potential whitespaces before "("
-    docs = docs.str.replace('\)', ') ')  # Add a space after ")"
+    docs = docs.str.replace('(\s*)/(\s*)', '/', regex=True)  # Removes whitespaces around "/"
+    docs = docs.str.replace('(\s*)\((\s*)', '(', regex=True)  # Removes potential whitespaces before "("
+    docs = docs.str.replace('\)', ') ', regex=True)  # Add a space after ")"
 
     # Set match paterns
     parenthesis_pattern = r"([\w\-]+)\(([\w\-]+)\)()"  # Case :  serveur(se)

@@ -136,7 +136,15 @@ def remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, 
     if set_to_remove is None:
         set_to_remove = []
     # Check if everything is in lowercase (NaNs are replaced, letters are kept)
-    if docs.fillna('').str.replace(r"[^A-Za-z]", '').replace('', 'placeholder').str.islower().sum() != docs.shape[0]:
+    if (
+        docs
+        .fillna('')
+        .str.replace(r"[^A-Za-z]", '', regex=True)
+        .replace('', 'placeholder', regex=True)
+        .str.islower()
+        .sum() 
+        != docs.shape[0]
+    ):
         logger.warning(docs)
         logger.warning('Some characters appear to be in uppercase, stopwords are in lowercase only.')
     # Common soptwords lists
@@ -168,7 +176,7 @@ def remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, 
         return docs.apply(lambda x: x if isinstance(x, str) else None)
 
     regex = utils.get_regex_match_words(stopwords_list)
-    return docs.str.replace(regex, '')
+    return docs.str.replace(regex, '', regex=True)
 
 
 def stopwords_ascii() -> list:

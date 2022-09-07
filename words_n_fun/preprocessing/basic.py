@@ -97,7 +97,7 @@ def get_true_spaces(docs: pd.Series) -> pd.Series:
         pd.Series: Modified documents
     '''
     logger.debug('Calling basic.get_true_spaces')
-    return docs.str.replace(r'\s', ' ')
+    return docs.str.replace(r'\s', ' ', regex=True)
 
 
 @utils.data_agnostic
@@ -136,7 +136,7 @@ def pe_matching(docs: pd.Series) -> pd.Series:
     logger.debug('Calling basic.pe_matching')
     # One can add more rules here
     regex = utils.get_regex_match_words(['(permis)\s+(b)'], case_insensitive=True, words_as_regex=True)
-    docs = docs.str.replace(regex, r'\2\3')
+    docs = docs.str.replace(regex, r'\2\3', regex=True)
     return docs
 
 
@@ -158,7 +158,7 @@ def remove_punct(docs: pd.Series, del_parenthesis: bool = True, replacement_char
         regex = r"[^\w\s\(\)\/]|_"
     else:
         regex = r"[^\w\s]|_"
-    return docs.str.replace(regex, replacement_char)
+    return docs.str.replace(regex, replacement_char, regex=True)
 
 
 @utils.data_agnostic
@@ -174,7 +174,7 @@ def trim_string(docs: pd.Series) -> pd.Series:
     '''
     logger.debug('Calling basic.trim_string')
     # TODO: better way ?
-    docs = docs.str.replace(r'[\t\f\v ]{2,}', ' ')
+    docs = docs.str.replace(r'[\t\f\v ]{2,}', ' ', regex=True)
     docs = remove_leading_and_ending_spaces(docs)
     return docs
 
@@ -191,8 +191,8 @@ def remove_leading_and_ending_spaces(docs: pd.Series) -> pd.Series:
         pd.Series: Modified documents
     '''
     logger.debug('Calling basic.remove_leading_and_ending_spaces')
-    docs = docs.str.replace(r'^(\s)+', '')
-    return docs.str.replace(r'(\s)+$', '')
+    docs = docs.str.replace(r'^(\s)+', '', regex=True)
+    return docs.str.replace(r'(\s)+$', '', regex=True)
 
 
 @utils.data_agnostic
@@ -208,7 +208,7 @@ def remove_numeric(docs: pd.Series, replacement_char: str = ' ') -> pd.Series:
         pd.Series: Modified documents
     '''
     logger.debug('Calling basic.remove_numeric')
-    return docs.str.replace(r'([0-9]+)', replacement_char)
+    return docs.str.replace(r'([0-9]+)', replacement_char, regex=True)
 
 
 @utils.data_agnostic
@@ -331,7 +331,7 @@ def deal_with_specific_characters(docs: pd.Series) -> pd.Series:
       pd.Series: Modified documents
     '''
     logger.debug('Calling basic.deal_with_specific_characters')
-    return docs.str.replace(r"(\s)?([',.;:])(\s)?", r' \2 ')
+    return docs.str.replace(r"(\s)?([',.;:])(\s)?", r' \2 ', regex=True)
 
 
 @utils.data_agnostic
@@ -351,9 +351,9 @@ def replace_urls(docs: pd.Series, replacement_char: str = ' ', replace_with_doma
     # based on : https://stackoverflow.com/questions/6038061/regular-expression-to-find-urls-within-a-string
     regex = r'(?i)(?<!\w|/)(((http|ftp|https):\/\/)*(www\.|ftp\.)+|((http|ftp|https):\/\/)+(www\.|ftp\.)*)([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?'
     if not replace_with_domain:
-        return docs.str.replace(regex, replacement_char)
+        return docs.str.replace(regex, replacement_char, regex=True)
     else:
-        return docs.str.replace(regex, r' \8 ')
+        return docs.str.replace(regex, r' \8 ', regex=True)
 
 
 @utils.data_agnostic
@@ -371,7 +371,7 @@ def remove_words(docs: pd.Series, words_to_remove: List[str], case_insensitive=F
     '''
     logger.debug('Calling utils.remove_words')
     regex = utils.get_regex_match_words(words_to_remove, case_insensitive=case_insensitive)
-    return docs.str.replace(regex, '')
+    return docs.str.replace(regex, '', regex=True)
 
 
 @utils.data_agnostic

@@ -17,25 +17,24 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-# Libs unittest
-import unittest
-from unittest.mock import Mock
-from unittest.mock import patch
-
+# Pour ces tests, on garde le logger pour certains tests
+# Du coup, default to critical
+import logging
+import ntpath
 
 # Utils libs
 import os
 import re
-import ntpath
+
+# Libs unittest
+import unittest
+from unittest.mock import Mock, patch
+
 import numpy as np
 import pandas as pd
-
 import words_n_fun as wnf
 from words_n_fun import utils
 
-# Pour ces tests, on garde le logger pour certains tests
-# Du coup, default to critical
-import logging
 logging.disable(logging.CRITICAL)
 logger = wnf.logger
 
@@ -528,11 +527,11 @@ class UtilsTests(unittest.TestCase):
         # Definition d'une fonction à wrapper
         def test_function_1(df):
             if type(df) != pd.DataFrame: raise TypeError('')
-            df['test1'] = df['test1'].str.replace('toto', 'titi')
+            df['test1'] = df['test1'].str.replace('toto', 'titi', regex=False)
             return df
         def test_function_2(df):
             if type(df) != pd.DataFrame: raise TypeError('')
-            df['test3'] = df['test2'].str.replace('toto', 'tata')
+            df['test3'] = df['test2'].str.replace('toto', 'tata', regex=False)
             return df
         # Vals à tester
         df_test = pd.DataFrame([['toto', 'titi', 'tata'], ['tata', 'toto', 'titi'], ['titi', 'tata', 'toto']]*50000,

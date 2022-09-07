@@ -11,7 +11,7 @@ on:
       - 'LICENSE'
       - 'Makefile'
   pull_request:
-    types: [opened, reopened, edit]
+    types: [opened, reopened, edit, synchronize]
     branches:
       - 'main'
       - 'release/v*'
@@ -21,6 +21,8 @@ on:
       - '*.md'
       - 'LICENSE'
       - 'Makefile'
+  schedule:
+    - cron: '0 0 * * 0'
   workflow_dispatch:
 
 jobs:

@@ -4,22 +4,17 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Generic badge](https://img.shields.io/badge/python-3.7|3.8-blue.svg)](https://shields.io/)
 
-# WORDS N FUN : Semantic analysis module built by agence Data Services
+# WORDS N FUN : Semantic analysis module built
+
+The purpose of this project is two folds:
+1. To normalize tools and how tos of semantic analysis projects
+2. To offer end to end pipelines to speed up the time to market of NLP services
 
 ---
 
 # Licence
 
 This project is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE V3.0. Please check the LICENSE file.
-
----
-
-## Why ?
-
-The purpose of this project is two folds:
-1. To normalize tools and how tos of semantic analysis projects
-2. To offer end to end pipelines to speed up the time to market of NLP services
-
 
 ---
 

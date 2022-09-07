@@ -19,7 +19,7 @@ from setuptools import setup
 # Get package directory
 package_directory = os.path.dirname(os.path.abspath(__file__))
 
-# Get package version (env variable or verion file + -local)
+# Get package version (env variable or version file + -local)
 version_path = os.path.join(package_directory, 'version.txt')
 with open(version_path, 'r') as version_file:
     version = version_file.read().strip()
@@ -38,22 +38,26 @@ setup(
     license='AGPL-3.0',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    author='Agence Data Services PE Nantes',
+    author="Agence Data Services PE Nantes",
+    author_email="contactadsaiframeworks.00619@pole-emploi.fr",
     description="Semantic library of the Data Services agency",
     url="https://github.com/OSS-Pole-Emploi/words_n_fun",
     platforms=['windows', 'linux'],
+    python_requires='>=3.7',
     package_data={
         'words_n_fun': ['configs/*.json', 'nltk_data/corpora/stopwords/french']
     },
     include_package_data=True,
     install_requires=[
-        'pandas==1.3.5',
-        'numpy==1.19.5',
-        'nltk>=3.4.5,<3.6',
-        'tqdm==4.62.2',  # https://github.com/tqdm/tqdm/issues/780
-        'simplejson>=3.17.0,<3.17.3',
-        'requests>=2.23.0,<2.25.1',
-        'ftfy>=5.8,<6.0',
+        'pandas>=1.3,<1.4; python_version < "3.8"',
+        'pandas>=1.3,<1.5; python_version >= "3.8"',
+        'numpy>=1.19,<1.22; python_version < "3.8"',
+        'numpy>=1.19,<1.24; python_version >= "3.8"',
+        'nltk>=3.4,<3.8',
+        'ftfy>=5.8,<6.2',
+        'tqdm>=4.40,<4.65',
+        'simplejson>=3.17,<3.18',
+        'requests>=2.23,<2.29',
     ],
     extras_require={
         "lemmatizer": ["spacy==3.3.1", "markupsafe==2.0.1", "Cython==0.29.24", "fr-core-news-sm==3.3.0"]

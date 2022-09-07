@@ -42,6 +42,7 @@ setup(
     description="Semantic library of the Data Services agency",
     url="https://github.com/OSS-Pole-Emploi/words_n_fun",
     platforms=['windows', 'linux'],
+    python_requires='>=3.7',
     package_data={
         'words_n_fun': ['configs/*.json', 'nltk_data/corpora/stopwords/french']
     },

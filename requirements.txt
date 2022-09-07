@@ -1,5 +1,6 @@
 # Data manipulation
-numpy==1.23.2
+numpy==1.21.6; python_version < "3.8"
+numpy==1.23.2; python_version >= "3.8"
 pandas==1.4.4
 
 # NLP

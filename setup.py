@@ -19,7 +19,7 @@ from setuptools import setup
 # Get package directory
 package_directory = os.path.dirname(os.path.abspath(__file__))
 
-# Get package version (env variable or verion file + -local)
+# Get package version (env variable or version file + -local)
 version_path = os.path.join(package_directory, 'version.txt')
 with open(version_path, 'r') as version_file:
     version = version_file.read().strip()
@@ -38,7 +38,8 @@ setup(
     license='AGPL-3.0',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    author='Agence Data Services PE Nantes',
+    author="Agence Data Services PE Nantes",
+    author_email="contactadsaiframeworks.00619@pole-emploi.fr",
     description="Semantic library of the Data Services agency",
     url="https://github.com/OSS-Pole-Emploi/words_n_fun",
     platforms=['windows', 'linux'],

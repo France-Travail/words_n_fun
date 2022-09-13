@@ -4,7 +4,7 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Generic badge](https://img.shields.io/badge/python-3.7|3.8-blue.svg)](https://shields.io/)
 
-# WORDS N FUN : Semantic analysis module built
+# WORDS N FUN : Semantic analysis module
 
 The purpose of this project is two folds:
 1. To normalize tools and how tos of semantic analysis projects

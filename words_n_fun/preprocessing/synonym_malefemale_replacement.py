@@ -24,6 +24,16 @@
 # - update_synonyms_set -> Update the synonyms set
 
 
+# /!\ THIS ONLY WORKS IN FRENCH
+# /!\ THIS ONLY WORKS IN FRENCH
+# /!\ THIS ONLY WORKS IN FRENCH
+# /!\ THIS ONLY WORKS IN FRENCH
+# /!\ THIS ONLY WORKS IN FRENCH
+# /!\ THIS ONLY WORKS IN FRENCH
+# /!\ THIS ONLY WORKS IN FRENCH
+# /!\ THIS ONLY WORKS IN FRENCH
+
+
 import re
 import pandas as pd
 from typing import Tuple

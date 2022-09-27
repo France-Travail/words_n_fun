@@ -25,5 +25,5 @@ coverage==6.4.4
 markupsafe==2.0.1  # BUG FIX -> https://github.com/aws/aws-sam-cli/issues/3661
 Cython==0.29.24
 spacy==3.3.1
-# The following line downloads a frnech spacy model. It can be commented if you don't have an internet access to download it, but lemmatizer features won't work.
+# The following line downloads a french spacy model. It can be commented if you don't have an internet access to download it, but lemmatizer features won't work.
 https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.3.0/fr_core_news_sm-3.3.0-py3-none-any.whl

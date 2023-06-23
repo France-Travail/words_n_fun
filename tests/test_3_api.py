@@ -260,27 +260,27 @@ class ApiTests(unittest.TestCase):
 
     @patch('logging.Logger._log')
     def test_check_pipeline_order(self, PrintMockLog):
-        '''Testing function api.check_pipeline_order'''
+        '''Testing function api.PreProcessor.check_pipeline_order'''
         def test(docs):
             return docs
 
         # On reenable le logger
         logging.disable(logging.NOTSET)
         # Assert pas de return
-        self.assertEqual(None, api.check_pipeline_order(['test']))
+        self.assertEqual(None, api.PreProcessor.check_pipeline_order(['test']))
         # Assertions sur print
         self.assertEqual(len(PrintMockLog.mock_calls), 1)  # warning sur fonction n'existe pas
-        api.check_pipeline_order(['notnull', 'remove_non_string'])
+        api.PreProcessor.check_pipeline_order(['notnull', 'remove_non_string'])
         self.assertEqual(len(PrintMockLog.mock_calls), 1 + 1)  # warning ordre utilisation
-        api.check_pipeline_order(['notnull', 'remove_non_string', 'notnull'])
+        api.PreProcessor.check_pipeline_order(['notnull', 'remove_non_string', 'notnull'])
         self.assertEqual(len(PrintMockLog.mock_calls), 1 + 1 + 2)  # warning ordre utilisation (x2)
-        api.check_pipeline_order(['notnull', test])
+        api.PreProcessor.check_pipeline_order(['notnull', test])
         self.assertEqual(len(PrintMockLog.mock_calls), 1 + 1 + 2 + 1)  # Fonction custom
-        api.check_pipeline_order(['notnull', test, 'toto'])
+        api.PreProcessor.check_pipeline_order(['notnull', test, 'toto'])
         self.assertEqual(len(PrintMockLog.mock_calls), 1 + 1 + 2 + 1 + 2)  # Fonction custom & fonction n'existe pas
-        api.check_pipeline_order(['notnull', test, 'toto', test])
+        api.PreProcessor.check_pipeline_order(['notnull', test, 'toto', test])
         self.assertEqual(len(PrintMockLog.mock_calls), 1 + 1 + 2 + 1 + 2 + 3)  # Fonction custom (x2) & fonction n'existe pas
-        api.check_pipeline_order(['notnull', test, 'toto', 'toto'])
+        api.PreProcessor.check_pipeline_order(['notnull', test, 'toto', 'toto'])
         self.assertEqual(len(PrintMockLog.mock_calls), 1 + 1 + 2 + 1 + 2 + 3 + 3)  # Fonction custom & fonction n'existe pas (x2)
 
         # RESET DEFAULT

@@ -82,16 +82,25 @@ DEFAULT_PIPELINE = ['remove_non_string', 'get_true_spaces', 'to_lower_except_sin
                     'remove_stopwords', 'stemmatize', 'remove_accents', 'trim_string', 'remove_leading_and_ending_spaces']
 
 
-class PreProcessor():
-    '''Class PreProcessor:
+class PreProcessor:
+    """Class PreProcessor:
     This class implements fit & transform methods and can therefore be used
     to insert a preprocessing pipeline into a Sklearn pipeline
-    '''
+    """
 
-    def __init__(self, pipeline: Union[list, None] = DEFAULT_PIPELINE, prefered_column: str = 'docs',
-                 modify_data: bool = True, chunksize: int = 0, first_row: str = 'header',
-                 columns: list = ['docs', 'tags'], sep: str = ',', nrows: int = 0, **pandas_args) -> None:
-        '''Class constructor
+    def __init__(
+        self,
+        pipeline: Union[list, None] = DEFAULT_PIPELINE,
+        prefered_column: str = "docs",
+        modify_data: bool = True,
+        chunksize: int = 0,
+        first_row: str = "header",
+        columns: list = ["docs", "tags"],
+        sep: str = ",",
+        nrows: int = 0,
+        **pandas_args,
+    ) -> None:
+        """Class constructor
         The purpose of a lot of these arguments are to handle the case when the input of the transform method is a path to
         a csv file. While handy, this use case is not advised.
 
@@ -109,15 +118,17 @@ class PreProcessor():
             ValueError: If chunksize < 0
             ValueError: If first_row is different than 'header', 'data' or 'skip'
             ValueError: If nrows < 0
-        '''
+        """
         if chunksize < 0:
             raise ValueError("chunksize parameter must be >= 0")
-        if first_row not in ['header', 'data', 'skip']:
-            raise ValueError('first_row parameter must be one of header, data, or skip')
+        if first_row not in ["header", "data", "skip"]:
+            raise ValueError("first_row parameter must be one of header, data, or skip")
         if nrows < 0:
-            raise ValueError('nrows parameter must be >= 0')
+            raise ValueError("nrows parameter must be >= 0")
         if not modify_data:
-            logger.warning("modify_data must be True for the preprocessor class to remain Sklearn compatible")
+            logger.warning(
+                "modify_data must be True for the preprocessor class to remain Sklearn compatible"
+            )
         # Set properties
         self.pipeline = pipeline
         self.prefered_column = prefered_column
@@ -129,23 +140,320 @@ class PreProcessor():
         self.nrows = nrows
         self.pandas_args = pandas_args
 
+        # Check the order of transformations in the pipeline, warnings are displayed if unexpected behaviours could occur
+        PreProcessor.check_pipeline_order(pipeline)  # todo add to class?
+
     def fit(self):
-        '''Required to be compatible with Sklearn pipelines'''
+        """Required to be compatible with Sklearn pipelines"""
         pass
 
-    def transform(self, docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame]) -> Union[str, list, np.ndarray, pd.Series, pd.DataFrame]:
-        '''Wrapper around preprocess_pipeline
+    def transform(
+        self, docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame]
+    ) -> Union[str, list, np.ndarray, pd.Series, pd.DataFrame]:
+        """Wrapper around preprocess_pipeline
 
         Args:
             docs (?): Documents to be preprocessed (compatible types : str ending by .csv, str, list, np.ndarray, pd.Series, pd.DataFrame)
         Returns:
             ?: Preprocessed documents (the initial type is preserved except for str ending by .csv -> pd.DataFrame)
-        '''
+        """
         if not isinstance(docs, pd.Series):
-            logger.warning("pd.Series is the prefered type for api.Preprocessor, other types might not be compatible with some Sklearn pipelines ")
-        return preprocess_pipeline(docs, pipeline=self.pipeline, prefered_column=self.prefered_column, modify_data=self.modify_data,
-                                   chunksize=self.chunksize, first_row=self.first_row, columns=self.columns, sep=self.sep,
-                                   nrows=self.nrows, **self.pandas_args)
+            logger.warning(
+                "pd.Series is the prefered type for api.Preprocessor, other types might not be compatible with some Sklearn pipelines "
+            )
+        return PreProcessor.preprocess_pipeline(
+            docs,
+            pipeline=self.pipeline,
+            prefered_column=self.prefered_column,
+            modify_data=self.modify_data,
+            chunksize=self.chunksize,
+            first_row=self.first_row,
+            columns=self.columns,
+            sep=self.sep,
+            nrows=self.nrows,
+            **self.pandas_args,
+        )
+
+    @staticmethod
+    def check_pipeline_order(pipeline: list) -> None:
+        """Checks the order of transformations in the pipeline, warnings are displayed if unexpected behaviours could occur
+
+        Args:
+            pipeline (list): Pipeline to check
+        """
+        logger.debug("Calling api.PreProcessor.check_pipeline_order")
+
+        # We get pipeline_usage_order. It contains some advices about the sequence of transformations within a pipeline
+        conf_file_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+            "configs",
+            "pipeline_usage_order.json",
+        )
+        with open(conf_file_path, "r") as f:
+            usage_order = json.load(f)
+
+        # Iterates over all the transformations within the pipeline
+        for current_number, current_function in enumerate(pipeline):
+            if callable(current_function):
+                if hasattr(current_function, "__name__"):
+                    function_name = current_function.__name__
+                else:
+                    function_name = str(current_function)
+                logger.info(
+                    f"The pipeline contains a custom funtion : {function_name}."
+                )
+                continue
+            # Skips if the current function is not in USAGE
+            if current_function not in USAGE.keys():
+                logger.warning(f"Function {current_function}is unknown: SKIP.")
+                continue
+            # Skips if the current function is not in usage_order
+            if current_function not in usage_order.keys():
+                continue
+
+            # We get the usage specifics about the current_function
+            # It tracks unexpected behaviors (eg: removing stopwords after a stemmatizer is called might not work as expected
+            # if words that should be considered as stopwords are truncated)
+            order_dict = usage_order[current_function]
+
+            # Cases where the current function has one or more "before" case
+            if "before" in order_dict.keys():
+                for before_function in order_dict["before"].keys():
+                    # If the function before_function exists in the pipeline before current_function, a warning is raised
+                    if (
+                        min(
+                            [len(pipeline)]
+                            + [
+                                i
+                                for i, _ in enumerate(pipeline)
+                                if _ == before_function
+                            ]
+                        )
+                        < current_number
+                    ):
+                        if order_dict["before"][before_function] is not None:
+                            logger.warning(
+                                f"/!\ /!\ /!\: {order_dict['before'][before_function]}"
+                            )
+                        # usage_order is cleared to avoid duplicate warnings
+                        try:
+                            usage_order[current_function]["before"][
+                                before_function
+                            ] = None
+                            usage_order[before_function]["after"][
+                                current_function
+                            ] = None
+                        except:
+                            continue
+
+            # Cases where the current function has one or more "after" case
+            if "after" in order_dict.keys():
+                for after_function in order_dict["after"].keys():
+                    # If the function after_function exists in the pipeline after current_function, a warning is raised
+                    if (
+                        max(
+                            [0]
+                            + [i for i, _ in enumerate(pipeline) if _ == after_function]
+                        )
+                        > current_number
+                    ):
+                        if order_dict["after"][after_function] is not None:
+                            logger.warning(
+                                f"/!\ /!\ /!\: {order_dict['after'][after_function]}"
+                            )
+                        # usage_order is cleared to avoid duplicate warnings
+                        try:
+                            usage_order[current_function]["after"][
+                                after_function
+                            ] = None
+                            usage_order[after_function]["before"][
+                                current_function
+                            ] = None
+                        except:
+                            continue
+
+            # Cases where the current function has one or more "not_before" case
+            if "not_before" in order_dict.keys():
+                for not_before_function in order_dict["not_before"].keys():
+                    if not not_before_function.startswith("OR"):
+                        # Checks if the prerequisites to current_function are missing
+                        if (
+                            min(
+                                [len(pipeline)]
+                                + [
+                                    i
+                                    for i, _ in enumerate(pipeline)
+                                    if _ == not_before_function
+                                ]
+                            )
+                            > current_number
+                        ):
+                            logger.warning(
+                                f"/!\ /!\ /!\: {order_dict['not_before'][not_before_function]}"
+                            )
+                    # 'OR' cases:
+                    else:
+                        warn_top = True
+                        # Checks if at least one of the prerequisites to current_function is present
+                        for or_function in order_dict["not_before"][
+                            not_before_function
+                        ].keys():
+                            if (
+                                min(
+                                    [len(pipeline)]
+                                    + [
+                                        i
+                                        for i, _ in enumerate(pipeline)
+                                        if _ == or_function
+                                    ]
+                                )
+                                > current_number
+                            ):
+                                warn_top = False
+                                break
+                        if warn_top:
+                            for or_function in order_dict["not_before"][
+                                not_before_function
+                            ].keys():
+                                logger.warning(
+                                    f"/!\ /!\ /!\: {order_dict['not_before'][not_before_function][or_function]}"
+                                )
+
+    @staticmethod
+    def preprocess_pipeline(
+        docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame],
+        pipeline: list = DEFAULT_PIPELINE,
+        prefered_column: str = "docs",
+        modify_data: bool = True,
+        chunksize: int = 0,
+        first_row: str = "header",
+        columns: list = ["docs", "tags"],
+        sep: str = ",",
+        nrows: int = 0,
+        **pandas_args,
+    ) -> Union[str, list, np.ndarray, pd.Series, pd.DataFrame]:
+        """Preprocessing pipeline
+
+        Args:
+            docs (?): Documents to be preprocessed (compatible types : str ending by .csv, str, list, np.ndarray, pd.Series, pd.DataFrame)
+        Kwargs:
+            pipeline (list): List of transformations to apply (from the USAGE dict) (default: DEFAULT_PIPELINE)
+            prefered_column (str): Default column name to consider as the document container when working with a pandas dataframe or csv file (default: 'docs')
+            modify_data (boolean): When working with a pandas dataframe or csv file, specifies wether the input data is modified or a new column is created (default: True)
+            chunksize (int): If not 0 the pipeline is processed chunkwise and this parameter specifies the chunksize (default : 0)
+            first_row (str): When working with a pandas dataframe or csv file, specifies how the first line is handled -'header', 'data' or 'skip' (default : 'header')
+            columns (list<str>) : When working with a pandas dataframe or csv file, specifies the columns to use, if first_row != 'header'. Truncate the data if there is too much columns & add some if they are missing (default : ['docs', 'tags'])
+            sep (str): When working with a pandas dataframe or csv file, specifies the csv separator (default: ',')
+            nrows (int) : When working with a pandas dataframe or csv file, specifies the maximum number of lines to read (default: 0 we take it all)
+            pandas_args : When working with a pandas dataframe or csv file, specifies arguments to pass to pandas
+        Raises:
+            ValueError: If chunksize < 0
+            ValueError: If first_row is different than 'header', 'data' or 'skip'
+            ValueError: If nrows < 0
+        Returns:
+            ?: Preprocessed documents (the initial type is preserved except for str ending by .csv -> pd.DataFrame)
+        """
+
+        # Get docs type
+        docs_type = utils.get_docs_type(docs)
+        # Get nb of elements to process
+        docs_length = utils.get_docs_length(
+            docs, first_row=first_row, sep=sep, nrows=nrows
+        )
+        max_chunksize = min(chunksize, docs_length) if chunksize != 0 else docs_length
+        # We need to deepcopy the data if it is a pandas dataframe
+        if docs_type in ("pd.DataFrame", "file_path"):
+            docs_copy = copy.deepcopy(docs)
+        else:
+            docs_copy = docs  # Not really a copy, no need & avoid memory waste
+        gen = utils.get_generator(
+            docs_copy,
+            chunksize=chunksize,
+            first_row=first_row,
+            columns=columns,
+            sep=sep,
+            nrows=nrows,
+            **pandas_args,
+        )
+        # Get the columns name that need to be processed (if working with a dataframe or csv file)
+        docs_column = utils.get_column_to_be_processed(
+            docs_copy,
+            prefered_column=prefered_column,
+            first_row=first_row,
+            columns=columns,
+            sep=sep,
+        )
+        # If we are working with a file, we get a new csv file to store the output
+        # Otherwise we get a new column
+        if docs_type == "file_path":
+            new_csv_file = utils.get_new_csv_name(docs_copy)
+            if not modify_data:
+                column_to_write = utils.get_new_column_name(
+                    utils.get_columns_to_use(
+                        docs_copy, first_row=first_row, columns=columns, sep=sep
+                    ),
+                    docs_column,
+                )
+            else:
+                column_to_write = docs_column
+        elif docs_type == "pd.DataFrame":
+            column_to_write = (
+                utils.get_new_column_name(list(docs_copy.columns), docs_column)
+                if not modify_data
+                else docs_column
+            )
+        docs_outputs = (
+            []
+        )  # Will contain the reults of the preprocessing pipeline if we are note working with csv files
+        # Chunk iteration
+        for i, docs_gen in enumerate(gen):
+            if chunksize != 0:
+                logger.info(f"Processing chunck n°{i + 1}:")
+            # For files or dataframes, we get the column to work with
+            if docs_type in ("pd.DataFrame", "file_path"):
+                docs_input = docs_gen[docs_column]
+            else:
+                docs_input = docs_gen
+            # Sequential processing of all the pipeline transformations
+            for item in pipeline:
+                # If item is a string, we apply the corresponding function from USAGE
+                if item in USAGE.keys():
+                    logger.info(f"Preprocessing: step {item}")
+                    docs_input = USAGE[item](docs_input)
+                # If it's a callable, it is directly called
+                elif callable(item):
+                    logger.info(f"Preprocessing: step {item}")
+                    docs_input = item(docs_input)
+                # gc collect if more than a thousand elements (improve memory usage)
+                if max_chunksize >= 1000:
+                    gc.collect()
+            # If working with a file, we append the processed chunk to the newly created result file
+            if docs_type == "file_path":
+                docs_gen[column_to_write] = docs_input
+                with_header = True if i == 0 else False
+                with open(new_csv_file, "a", encoding="utf-8") as f:
+                    docs_gen.to_csv(f, header=with_header, sep=sep, index=False)
+            # Otherwise it is appended to docs_outputs
+            else:
+                docs_outputs.append(docs_input)
+        # Manage return types, either a str, a path to the result file, a list, a np.ndarray, a pd.Series or a Dataframe
+        if docs_type == "file_path":
+            return new_csv_file
+        elif docs_type == "str":
+            return docs_outputs[0]
+        elif docs_type == "list":
+            return [elem for docs_output in docs_outputs for elem in docs_output]
+        elif docs_type == "np.ndarray":
+            return np.array(
+                [elem for docs_output in docs_outputs for elem in docs_output]
+            )
+        elif docs_type in ["pd.Series", "pd.DataFrame"]:
+            series_output = pd.concat(docs_outputs)  # Element pd.Series
+            if docs_type == "pd.Series":
+                return series_output
+            elif docs_type == "pd.DataFrame":
+                docs_copy[column_to_write] = series_output
+                return docs_copy
 
 
 def get_preprocessor(pipeline: list = DEFAULT_PIPELINE, prefered_column: str = 'docs', modify_data: bool = True,
@@ -206,7 +514,7 @@ def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFra
     if nrows < 0:
         raise ValueError('nrows parameter must be >= 0')
     # Check the order of transformations in the pipeline, warnings are displayed if unexpected behaviours could occur
-    check_pipeline_order(pipeline)
+    PreProcessor.check_pipeline_order(pipeline)
     # Get docs type
     docs_type = utils.get_docs_type(docs)
     # Get nb of elements to process
@@ -280,89 +588,6 @@ def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFra
         elif docs_type == 'pd.DataFrame':
             docs_copy[column_to_write] = series_output
             return docs_copy
-
-
-def check_pipeline_order(pipeline: list) -> None:
-    '''Checks the order of transformations in the pipeline, warnings are displayed if unexpected behaviours could occur
-
-    Args:
-        pipeline (list): Pipeline to check
-    '''
-    logger.debug('Calling api.check_pipeline_order')
-
-    # We get pipeline_usage_order. It contains some advices about the sequence of transformations within a pipeline
-    conf_file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'configs', 'pipeline_usage_order.json')
-    with open(conf_file_path, 'r') as f:
-        usage_order = json.load(f)
-
-    # Iterates over all the transformations within the pipeline
-    for current_number, current_function in enumerate(pipeline):
-        if callable(current_function):
-            if hasattr(current_function, '__name__'):
-                function_name = current_function.__name__
-            else:
-                function_name = str(current_function)
-            logger.info(f"The pipeline contains a custom funtion : {function_name}.")
-            continue
-        # Skips if the current function is not in USAGE
-        if current_function not in USAGE.keys():
-            logger.warning(f"Function {current_function}is unknown: SKIP.")
-            continue
-        # Skips if the current function is not in usage_order
-        if current_function not in usage_order.keys():
-            continue
-
-        # We get the usage specifics about the current_function
-        # It tracks unexpected behaviors (eg: removing stopwords after a stemmatizer is called might not work as expected
-        # if words that should be considered as stopwords are truncated)
-        order_dict = usage_order[current_function]
-
-        # Cases where the current function has one or more "before" case
-        if 'before' in order_dict.keys():
-            for before_function in order_dict['before'].keys():
-                # If the function before_function exists in the pipeline before current_function, a warning is raised
-                if min([len(pipeline)] + [i for i, _ in enumerate(pipeline) if _ == before_function]) < current_number:
-                    if order_dict['before'][before_function] is not None:
-                        logger.warning(f"/!\ /!\ /!\: {order_dict['before'][before_function]}")
-                    # usage_order is cleared to avoid duplicate warnings
-                    try:
-                        usage_order[current_function]['before'][before_function] = None
-                        usage_order[before_function]['after'][current_function] = None
-                    except:
-                        continue
-
-        # Cases where the current function has one or more "after" case
-        if 'after' in order_dict.keys():
-            for after_function in order_dict['after'].keys():
-                # If the function after_function exists in the pipeline after current_function, a warning is raised
-                if max([0] + [i for i, _ in enumerate(pipeline) if _ == after_function]) > current_number:
-                    if order_dict['after'][after_function] is not None:
-                        logger.warning(f"/!\ /!\ /!\: {order_dict['after'][after_function]}")
-                    # usage_order is cleared to avoid duplicate warnings
-                    try:
-                        usage_order[current_function]['after'][after_function] = None
-                        usage_order[after_function]['before'][current_function] = None
-                    except:
-                        continue
-
-        # Cases where the current function has one or more "not_before" case
-        if 'not_before' in order_dict.keys():
-            for not_before_function in order_dict['not_before'].keys():
-                if not not_before_function.startswith('OR'):
-                    # Checks if the prerequisites to current_function are missing
-                    if min([len(pipeline)] + [i for i, _ in enumerate(pipeline) if _ == not_before_function]) > current_number:
-                        logger.warning(f"/!\ /!\ /!\: {order_dict['not_before'][not_before_function]}")
-                # 'OR' cases:
-                else:
-                    warn_top = True
-                    # Checks if at least one of the prerequisites to current_function is present
-                    for or_function in order_dict['not_before'][not_before_function].keys():
-                        if min([len(pipeline)] + [i for i, _ in enumerate(pipeline) if _ == or_function]) > current_number:
-                            warn_top = False
-                            break
-                    if warn_top:
-                        for or_function in order_dict['not_before'][not_before_function].keys():
-                            logger.warning(f"/!\ /!\ /!\: {order_dict['not_before'][not_before_function][or_function]}")
 
 
 @utils.data_agnostic_input

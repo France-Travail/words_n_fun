@@ -506,88 +506,13 @@ def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFra
     Returns:
         ?: Preprocessed documents (the initial type is preserved except for str ending by .csv -> pd.DataFrame)
     '''
-    logger.debug('Calling api.preprocess_pipeline')
-    if chunksize < 0:
-        raise ValueError("chunksize parameter must be >= 0")
-    if first_row not in ['header', 'data', 'skip']:
-        raise ValueError('first_row parameter must be one of header, data, or skip')
-    if nrows < 0:
-        raise ValueError('nrows parameter must be >= 0')
-    # Check the order of transformations in the pipeline, warnings are displayed if unexpected behaviours could occur
-    PreProcessor.check_pipeline_order(pipeline)
-    # Get docs type
-    docs_type = utils.get_docs_type(docs)
-    # Get nb of elements to process
-    docs_length = utils.get_docs_length(docs, first_row=first_row, sep=sep, nrows=nrows)
-    max_chunksize = min(chunksize, docs_length) if chunksize != 0 else docs_length
-    # We need to deepcopy the data if it is a pandas dataframe
-    if docs_type in ('pd.DataFrame', 'file_path'):
-        docs_copy = copy.deepcopy(docs)
-    else:
-        docs_copy = docs  # Not really a copy, no need & avoid memory waste
-    gen = utils.get_generator(docs_copy, chunksize=chunksize, first_row=first_row,
-                              columns=columns, sep=sep, nrows=nrows, **pandas_args)
-    # Get the columns name that need to be processed (if working with a dataframe or csv file)
-    docs_column = utils.get_column_to_be_processed(docs_copy, prefered_column=prefered_column,
-                                                   first_row=first_row, columns=columns, sep=sep)
-    # If we are working with a file, we get a new csv file to store the output
-    # Otherwise we get a new column
-    if docs_type == 'file_path':
-        new_csv_file = utils.get_new_csv_name(docs_copy)
-        if not modify_data:
-            column_to_write = utils.get_new_column_name(utils.get_columns_to_use(docs_copy, first_row=first_row, columns=columns, sep=sep), docs_column)
-        else:
-            column_to_write = docs_column
-    elif docs_type == 'pd.DataFrame':
-        column_to_write = utils.get_new_column_name(list(docs_copy.columns), docs_column) if not modify_data else docs_column
-    docs_outputs = []  # Will contain the reults of the preprocessing pipeline if we are note working with csv files
-    # Chunk iteration
-    for i, docs_gen in enumerate(gen):
-        if chunksize != 0:
-            logger.info(f"Processing chunck n°{i + 1}:")
-        # For files or dataframes, we get the column to work with
-        if docs_type in ('pd.DataFrame', 'file_path'):
-            docs_input = docs_gen[docs_column]
-        else:
-            docs_input = docs_gen
-        # Sequential processing of all the pipeline transformations
-        for item in pipeline:
-            # If item is a string, we apply the corresponding function from USAGE
-            if item in USAGE.keys():
-                logger.info(f"Preprocessing: step {item}")
-                docs_input = USAGE[item](docs_input)
-            # If it's a callable, it is directly called
-            elif callable(item):
-                logger.info(f"Preprocessing: step {item}")
-                docs_input = item(docs_input)
-            # gc collect if more than a thousand elements (improve memory usage)
-            if max_chunksize >= 1000:
-                gc.collect()
-        # If working with a file, we append the processed chunk to the newly created result file
-        if docs_type == 'file_path':
-            docs_gen[column_to_write] = docs_input
-            with_header = True if i == 0 else False
-            with open(new_csv_file, 'a', encoding='utf-8') as f:
-                docs_gen.to_csv(f, header=with_header, sep=sep, index=False)
-        # Otherwise it is appended to docs_outputs
-        else:
-            docs_outputs.append(docs_input)
-    # Manage return types, either a str, a path to the result file, a list, a np.ndarray, a pd.Series or a Dataframe
-    if docs_type == 'file_path':
-        return new_csv_file
-    elif docs_type == 'str':
-        return docs_outputs[0]
-    elif docs_type == 'list':
-        return [elem for docs_output in docs_outputs for elem in docs_output]
-    elif docs_type == 'np.ndarray':
-        return np.array([elem for docs_output in docs_outputs for elem in docs_output])
-    elif docs_type in ['pd.Series', 'pd.DataFrame']:
-        series_output = pd.concat(docs_outputs)  # Element pd.Series
-        if docs_type == 'pd.Series':
-            return series_output
-        elif docs_type == 'pd.DataFrame':
-            docs_copy[column_to_write] = series_output
-            return docs_copy
+
+    # get a PreProcessor object and transform
+    preprocessor = get_preprocessor(pipeline, prefered_column, modify_data, 
+                                        chunksize, first_row, columns,
+                                        sep, nrows, **pandas_args)
+    return preprocessor.transform(docs)
+
 
 
 @utils.data_agnostic_input

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# coding=utf-8
 
 ## Tests - unit test of utils functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
@@ -28,7 +29,7 @@ import re
 
 # Libs unittest
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd

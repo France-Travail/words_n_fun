@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# coding=utf-8
 
 ## Tests - unit test of api functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
@@ -19,14 +20,12 @@
 
 # Libs unittest
 import unittest
-from unittest.mock import Mock
 from unittest.mock import patch
 
 # Utils libs
 import os
 import functools
 import importlib
-import numpy as np
 import pandas as pd
 from words_n_fun import utils
 from words_n_fun.preprocessing import api

@@ -261,8 +261,8 @@ def impl_remove_leading_and_ending_spaces(docs: pd.Series) -> pd.Series:
     Returns:
         pd.Series: Modified documents
     '''
-    docs = docs.str.replace(r'^(\s)+', '', regex=True)
-    return docs.str.replace(r'(\s)+$', '', regex=True)
+    return docs.str.replace(r'(^(\s)+)|((\s)+$)', '', regex=True)
+
 
 
 @utils.data_agnostic

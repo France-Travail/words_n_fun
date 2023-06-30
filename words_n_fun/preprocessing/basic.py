@@ -98,6 +98,7 @@ def impl_remove_non_string(docs: pd.Series) -> pd.Series:
 def remove_non_string(docs: pd.Series) -> pd.Series:
     return impl_remove_non_string(docs)
 
+@utils.regroup_data_series
 def impl_get_true_spaces(docs: pd.Series) -> pd.Series:
     '''Replaces all whitespaces by a single space
 
@@ -110,7 +111,6 @@ def impl_get_true_spaces(docs: pd.Series) -> pd.Series:
     return docs.str.replace(r'\s', ' ', regex=True)
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def get_true_spaces(docs: pd.Series) -> pd.Series:
     '''Replaces all whitespaces by a single space
 
@@ -123,7 +123,7 @@ def get_true_spaces(docs: pd.Series) -> pd.Series:
     logger.debug('Calling basic.get_true_spaces')
     return impl_get_true_spaces(docs)
 
-
+@utils.regroup_data_series
 def impl_to_lower(docs: pd.Series, threshold_nb_chars: int = 0) -> pd.Series:
     '''Transforms the string to lower case
 
@@ -141,21 +141,7 @@ def impl_to_lower(docs: pd.Series, threshold_nb_chars: int = 0) -> pd.Series:
     else:
         return docs.str.lower()
     
-def to_lower(docs: pd.Series, threshold_nb_chars: int = 0) -> pd.Series:
-    '''Transforms the string to lower case
-
-    Args:
-        docs (pd.Series): Documents to process
-    Kwargs:
-        threshold_nb_chars (int): Minimum number of characters for a token to be transformed to lowercase (def=0).
-
-    Returns:
-        pd.Series: Modified documents
-    '''
-    return impl_to_lower(docs, threshold_nb_chars)
-    
 @utils.data_agnostic
-@utils.regroup_data_series
 def to_lower(docs: pd.Series, threshold_nb_chars: int = 0) -> pd.Series:
     '''Transforms the string to lower case
 
@@ -170,7 +156,7 @@ def to_lower(docs: pd.Series, threshold_nb_chars: int = 0) -> pd.Series:
     logger.debug('Calling basic.to_lower')
     return impl_to_lower(docs)
 
-
+@utils.regroup_data_series
 def impl_pe_matching(docs: pd.Series) -> pd.Series:
     '''Specific one-to-one tokens replacements
     For instance 'Permis b' => 'Permisb'
@@ -189,7 +175,6 @@ def impl_pe_matching(docs: pd.Series) -> pd.Series:
 
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def pe_matching(docs: pd.Series) -> pd.Series:
     '''Specific one-to-one tokens replacements
     For instance 'Permis b' => 'Permisb'
@@ -248,7 +233,7 @@ def impl_trim_string(docs: pd.Series) -> pd.Series:
     '''
     # TODO: better way ?
     docs = docs.str.replace(r'[\t\f\v ]{2,}', ' ', regex=True)
-    docs = remove_leading_and_ending_spaces(docs)
+    docs = impl_remove_leading_and_ending_spaces(docs)
     return docs
 
 
@@ -266,7 +251,7 @@ def trim_string(docs: pd.Series) -> pd.Series:
     logger.debug('Calling basic.trim_string')
     return impl_trim_string(docs)
 
-
+@utils.regroup_data_series
 def impl_remove_leading_and_ending_spaces(docs: pd.Series) -> pd.Series:
     '''Removes leading and trailing spaces
 
@@ -281,7 +266,6 @@ def impl_remove_leading_and_ending_spaces(docs: pd.Series) -> pd.Series:
 
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def remove_leading_and_ending_spaces(docs: pd.Series) -> pd.Series:
     '''Removes leading and trailing spaces
 
@@ -294,7 +278,7 @@ def remove_leading_and_ending_spaces(docs: pd.Series) -> pd.Series:
     logger.debug('Calling basic.remove_leading_and_ending_spaces')
     return impl_remove_leading_and_ending_spaces(docs)
 
-
+@utils.regroup_data_series
 def impl_remove_numeric(docs: pd.Series, replacement_char: str = ' ') -> pd.Series:
     '''Replaces numeric strings by a space
 
@@ -309,7 +293,6 @@ def impl_remove_numeric(docs: pd.Series, replacement_char: str = ' ') -> pd.Seri
 
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def remove_numeric(docs: pd.Series, replacement_char: str = ' ') -> pd.Series:
     '''Replaces numeric strings by a space
 
@@ -323,7 +306,7 @@ def remove_numeric(docs: pd.Series, replacement_char: str = ' ') -> pd.Series:
     logger.debug('Calling basic.remove_numeric')
     return impl_remove_numeric(docs, replacement_char)
 
-
+@utils.regroup_data_series
 def impl_remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, None] = None,
                      set_to_remove: Union[list, None] = None) -> pd.Series:
     '''Removes stopwords
@@ -341,7 +324,6 @@ def impl_remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[l
 
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, None] = None,
                      set_to_remove: Union[list, None] = None) -> pd.Series:
     '''Removes stopwords
@@ -358,7 +340,7 @@ def remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, 
     logger.debug('Calling basic.remove_stopwords')
     return impl_remove_stopwords(docs, opt=opt, set_to_add=set_to_add, set_to_remove=set_to_remove)
 
-
+@utils.regroup_data_series
 def impl_remove_accents(docs: pd.Series, use_tqdm: bool = True) -> pd.Series:
     '''Removes all accents and special characters (ç..)
 
@@ -377,7 +359,6 @@ def impl_remove_accents(docs: pd.Series, use_tqdm: bool = True) -> pd.Series:
 
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def remove_accents(docs: pd.Series, use_tqdm: bool = True) -> pd.Series:
     '''Removes all accents and special characters (ç..)
 
@@ -391,7 +372,7 @@ def remove_accents(docs: pd.Series, use_tqdm: bool = True) -> pd.Series:
     '''
     return impl_remove_accents(docs, use_tqdm)
 
-
+@utils.regroup_data_series
 def impl_remove_gender_synonyms(docs: pd.Series) -> pd.Series:
     '''[French] Removes gendered synonyms
     # Find occurences such as "male version / female version" (eg: Coiffeur / Coiffeuse)
@@ -407,7 +388,6 @@ def impl_remove_gender_synonyms(docs: pd.Series) -> pd.Series:
 
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def remove_gender_synonyms(docs: pd.Series) -> pd.Series:
     '''[French] Removes gendered synonyms
     # Find occurences such as "male version / female version" (eg: Coiffeur / Coiffeuse)
@@ -422,7 +402,7 @@ def remove_gender_synonyms(docs: pd.Series) -> pd.Series:
     logger.debug('Calling basic.remove_gender_synonyms')
     return impl_remove_gender_synonyms(docs)
 
-
+@utils.regroup_data_series
 def impl_lemmatize(docs: pd.Series) -> pd.Series:
     '''Lemmatizes the documents
     Appel à une API externe
@@ -439,7 +419,6 @@ def impl_lemmatize(docs: pd.Series) -> pd.Series:
 
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def lemmatize(docs: pd.Series) -> pd.Series:
     '''Lemmatizes the documents
     Appel à une API externe
@@ -454,7 +433,7 @@ def lemmatize(docs: pd.Series) -> pd.Series:
     # Process
     return impl_lemmatize(docs)
 
-
+@utils.regroup_data_series
 def impl_stemmatize(docs: pd.Series) -> pd.Series:
     '''Stemmatizes words in the documents
 
@@ -469,7 +448,6 @@ def impl_stemmatize(docs: pd.Series) -> pd.Series:
 
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def stemmatize(docs: pd.Series) -> pd.Series:
     '''Stemmatizes words in the documents
 
@@ -483,7 +461,7 @@ def stemmatize(docs: pd.Series) -> pd.Series:
     logger.warning('Calling the FRENCH stemmer')
     return impl_stemmatize(docs)
 
-
+@utils.regroup_data_series
 def impl_add_point(docs: pd.Series) -> pd.Series:
     '''Adds a dot at the end of each line
 
@@ -498,7 +476,6 @@ def impl_add_point(docs: pd.Series) -> pd.Series:
 
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def add_point(docs: pd.Series) -> pd.Series:
     '''Adds a dot at the end of each line
 
@@ -511,7 +488,7 @@ def add_point(docs: pd.Series) -> pd.Series:
     logger.debug('Calling basic.add_point')
     return impl_add_point(docs)
 
-
+@utils.regroup_data_series
 def impl_deal_with_specific_characters(docs: pd.Series) -> pd.Series:
     '''Adds spaces before and after some punctuations (, : ; .)
 
@@ -524,7 +501,6 @@ def impl_deal_with_specific_characters(docs: pd.Series) -> pd.Series:
 
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def deal_with_specific_characters(docs: pd.Series) -> pd.Series:
     '''Adds spaces before and after some punctuations (, : ; .)
 
@@ -536,7 +512,7 @@ def deal_with_specific_characters(docs: pd.Series) -> pd.Series:
     logger.debug('Calling basic.deal_with_specific_characters')
     return impl_deal_with_specific_characters(docs)
 
-
+@utils.regroup_data_series
 def impl_replace_urls(docs: pd.Series, replacement_char: str = ' ', replace_with_domain: bool = False) -> pd.Series:
     '''Replaces URLs by either a str or the url domain
 
@@ -557,7 +533,6 @@ def impl_replace_urls(docs: pd.Series, replacement_char: str = ' ', replace_with
 
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def replace_urls(docs: pd.Series, replacement_char: str = ' ', replace_with_domain: bool = False) -> pd.Series:
     '''Replaces URLs by either a str or the url domain
 
@@ -572,7 +547,7 @@ def replace_urls(docs: pd.Series, replacement_char: str = ' ', replace_with_doma
     logger.debug('Calling basic.replace_urls')
     return impl_replace_urls(docs, replacement_char, replace_with_domain)
     
-
+@utils.regroup_data_series
 def impl_remove_words(docs: pd.Series, words_to_remove: List[str], case_insensitive=False) -> pd.Series:
     '''Function to remove words from a list
 
@@ -589,7 +564,6 @@ def impl_remove_words(docs: pd.Series, words_to_remove: List[str], case_insensit
     
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def remove_words(docs: pd.Series, words_to_remove: List[str], case_insensitive=False) -> pd.Series:
     '''Function to remove words from a list
 
@@ -604,7 +578,7 @@ def remove_words(docs: pd.Series, words_to_remove: List[str], case_insensitive=F
     logger.debug('Calling utils.remove_words')
     return impl_remove_words(docs, words_to_remove, case_insensitive)
 
-
+@utils.regroup_data_series
 def impl_fix_text(docs: pd.Series, **ftfy_kwargs) -> pd.Series:
     '''Fixes numerous inconsistencies within a text (via ftfy)
        By default:
@@ -631,7 +605,6 @@ def impl_fix_text(docs: pd.Series, **ftfy_kwargs) -> pd.Series:
     return docs.progress_apply(lambda x: ftfy.fix_text(x, **ftfy_kwargs) if isinstance(x, str) else None)
 
 @utils.data_agnostic
-@utils.regroup_data_series
 def fix_text(docs: pd.Series, **ftfy_kwargs) -> pd.Series:
     '''Fixes numerous inconsistencies within a text (via ftfy)
        By default:

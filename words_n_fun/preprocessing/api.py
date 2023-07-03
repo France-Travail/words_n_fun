@@ -171,6 +171,22 @@ def get_preprocessor(pipeline: list = DEFAULT_PIPELINE, prefered_column: str = '
                         chunksize=chunksize, first_row=first_row, columns=columns, sep=sep,
                         nrows=nrows, **pandas_args)
 
+@utils.data_agnostic
+def process_block_of_data(chunk: pd.Series, pipeline: list, max_chunksize: int):
+    """ sub function to call a small block of data"""
+    for item in pipeline:
+        # If item is a string, we apply the corresponding function from USAGE
+        if item in USAGE.keys():
+            logger.info(f"Preprocessing: step {item}")
+            chunk = USAGE[item](chunk)
+        # If it's a callable, it is directly called
+        elif callable(item):
+            logger.info(f"Preprocessing: step {item}")
+            chunk = item(chunk)
+        # gc collect if more than a thousand elements (improve memory usage)
+        if max_chunksize >= 1000:
+            gc.collect()
+    return chunk
 
 def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame],
                         pipeline: list = DEFAULT_PIPELINE, prefered_column: str = 'docs',
@@ -235,23 +251,6 @@ def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFra
     docs_outputs = []  # Will contain the reults of the preprocessing pipeline if we are note working with csv files
     # Chunk iteration
 
-    # TODO extraire fonction completement?
-    # TODO extraire liste de fonctions for pipeline
-    @utils.data_agnostic
-    def process_chuck(docs_input):
-        for item in pipeline:
-            # If item is a string, we apply the corresponding function from USAGE
-            if item in USAGE.keys():
-                logger.info(f"Preprocessing: step {item}")
-                docs_input = USAGE[item](docs_input)
-            # If it's a callable, it is directly called
-            elif callable(item):
-                logger.info(f"Preprocessing: step {item}")
-                docs_input = item(docs_input)
-            # gc collect if more than a thousand elements (improve memory usage)
-            if max_chunksize >= 1000:
-                gc.collect()
-        return docs_input
         
 
     for i, docs_gen in enumerate(gen):
@@ -263,7 +262,7 @@ def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFra
         else:
             docs_input = docs_gen
         # Sequential processing of all the pipeline transformations
-        docs_input=process_chuck(docs_input)
+        docs_input=process_block_of_data(docs_input, pipeline, max_chunksize)
         # If working with a file, we append the processed chunk to the newly created result file
         if docs_type == 'file_path':
             docs_gen[column_to_write] = docs_input

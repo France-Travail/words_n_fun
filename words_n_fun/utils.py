@@ -656,7 +656,7 @@ def get_column_to_be_processed(docs: Union[str, list, np.ndarray, pd.Series, pd.
         return prefered_column
 
 
-def regroup_data_series(function: Callable, min_nb_data: int = 1000, prefix_text: Union[str, None] = None) -> Callable:
+def regroup_data_series(function: Callable, min_nb_data:int = 1000, prefix_text: Union[str, None] = None, max_percent_unique: float = 0.9) -> Callable:
     '''Wrapper to regroup identical data of a pd.Series before being processed
     Can be used as a decorator
 
@@ -665,6 +665,8 @@ def regroup_data_series(function: Callable, min_nb_data: int = 1000, prefix_text
     Kwargs:
         min_nb_data (int): Minimum number of rows within the document required to apply this wrapper (default : 1000)
         prefix_text (str): Prefix to add
+        min_percent_unique (float): value [0-1] percentage of unique values to perform reduction 
+                            for very quick functions min_percent_unique should be low to have a real speed up
     Returns:
         function: Decorated function
     '''
@@ -678,7 +680,7 @@ def regroup_data_series(function: Callable, min_nb_data: int = 1000, prefix_text
 
     # Set wrapper
     @wraps(function)
-    def wrapper(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame], *args, **kwargs) -> pd.Series:
+    def wrapper(docs: pd.Series, *args, **kwargs) -> pd.Series:
         '''Wrapper
 
         Args:
@@ -692,16 +694,19 @@ def regroup_data_series(function: Callable, min_nb_data: int = 1000, prefix_text
         # If there is not enough data, the wrapper is discarded and the function returned as is
         if init_len < min_nb_data:
             return function(docs, *args, **kwargs)
-        # If there is no duplicates in the data, the wrapper is discarded as well
-        elif len(docs.unique()) == init_len:
+        
+        # If there is not enough duplicates in the data, the wrapper is discarded as well
+        unique_docs = docs.unique()
+        if  ( len(unique_docs) / init_len ) > max_percent_unique:
             return function(docs, *args, **kwargs)
+        
         init_name = docs.name
         init_index = docs.index
         # Put docs into a dataframe
         df = pd.DataFrame(docs)
         df.columns = ["input_data"]
         # Regroup same values together
-        input_data = df["input_data"].dropna().drop_duplicates()
+        input_data = pd.Series(unique_docs).dropna()
         logger.debug(f"{prefix_text} Reduced data to be processed by {100 * (df.shape[0] - len(input_data)) / df.shape[0]} % (grouped duplicated rows)")
         # Get output
         output_data = function(input_data, *args, **kwargs)

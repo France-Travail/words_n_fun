@@ -42,6 +42,7 @@ import ftfy
 import logging
 import unicodedata
 import pandas as pd
+import numpy as np
 from typing import Union, List
 from nltk.stem.snowball import FrenchStemmer
 
@@ -211,10 +212,9 @@ def remove_numeric(docs: pd.Series, replacement_char: str = ' ') -> pd.Series:
     return docs.str.replace(r'([0-9]+)', replacement_char, regex=True)
 
 
-@utils.data_agnostic
-@utils.regroup_data_series
-def remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, None] = None,
-                     set_to_remove: Union[list, None] = None) -> pd.Series:
+# called function already with wrappers
+def remove_stopwords(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame], opt: str = 'all', set_to_add: Union[list, None] = None,
+                     set_to_remove: Union[list, None] = None) -> Union[str, list, np.ndarray, pd.Series, pd.DataFrame]:
     '''Removes stopwords
 
     Args:
@@ -254,9 +254,8 @@ def remove_accents(docs: pd.Series, use_tqdm: bool = True) -> pd.Series:
         return docs.apply(lambda x: ''.join((c for c in unicodedata.normalize('NFD', x) if unicodedata.category(c) != 'Mn')) if isinstance(x, str) else None)
 
 
-@utils.data_agnostic
-@utils.regroup_data_series
-def remove_gender_synonyms(docs: pd.Series) -> pd.Series:
+# wrappers in the main function
+def remove_gender_synonyms(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame]) -> Union[str, list, np.ndarray, pd.Series, pd.DataFrame]:
     '''[French] Removes gendered synonyms
     # Find occurences such as "male version / female version" (eg: Coiffeur / Coiffeuse)
     # By convention, the male version is kept (in accordance with the lemmatizer)
@@ -270,10 +269,8 @@ def remove_gender_synonyms(docs: pd.Series) -> pd.Series:
     logger.debug('Calling basic.remove_gender_synonyms')
     return synonym_malefemale_replacement.remove_gender_synonyms(docs)
 
-
-@utils.data_agnostic
-@utils.regroup_data_series
-def lemmatize(docs: pd.Series) -> pd.Series:
+# lemmatizer.lemmatize has already wrappers
+def lemmatize(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame]) -> Union[str, list, np.ndarray, pd.Series, pd.DataFrame]:
     '''Lemmatizes the documents
     Appel à une API externe
 

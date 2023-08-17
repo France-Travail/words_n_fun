@@ -308,6 +308,28 @@ class ApiTests(unittest.TestCase):
         # Vérification du fonctionnement type
         pd.testing.assert_series_equal(api.list_one_appearance_word(pd.Series(docs)), wanted_result)
 
+    def test_process_block_of_data(self):
+            # first test, sans changement
+            docs = pd.Series(["\tCeci est un test de la fonction list_one_appearance_word", 
+                    "il s agit d une fonction Aui compte les mots dans une Serie pandas ", 
+                    " test compte ok Test"])
+            expected = pd.Series(["\tCeci est un test de la fonction list_one_appearance_word", 
+                    "il s agit d une fonction Aui compte les mots dans une Serie pandas ", 
+                    " test compte ok Test"])
+            result = api.process_block_of_data(docs, ['notnull', 'remove_non_string'], -1)
+            pd.testing.assert_series_equal(expected, result)
+
+            # second test, avec changement
+            docs = pd.Series(["\tCeci est un test de la fonction list_one_appearance_word", 
+                    "il s agit d une fonction Aui compte les mots dans une Serie pandas ", 
+                    " test compte ok Test"])            
+            expected = pd.Series(["ceci est un test de la fonction list_one_appearance_word", 
+                    "il s agit d une fonction aui compte les mots dans une serie pandas", 
+                    "test compte ok test"])
+            result = api.process_block_of_data(docs, ['to_lower', 'trim_string'], -1)
+            pd.testing.assert_series_equal(result, expected)
+
+
 
 
 # Execution des tests

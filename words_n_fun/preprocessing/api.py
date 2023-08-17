@@ -128,7 +128,20 @@ class PreProcessor():
         self.sep = sep
         self.nrows = nrows
         self.pandas_args = pandas_args
+    
+    @property
+    def pipeline(self):
+        ''' Getter for pipeline property'''
+        return self._pipeline
 
+    @pipeline.setter
+    def pipeline(self, value):
+        ''' Setter for pipeline
+        Ther order of parameters is checked when necessary'''
+        self._pipeline = value
+        # Check the order of transformations in the pipeline, warnings are displayed if unexpected behaviours could occur
+        check_pipeline_order(self._pipeline)
+    
     def fit(self):
         '''Required to be compatible with Sklearn pipelines'''
         pass
@@ -143,7 +156,7 @@ class PreProcessor():
         '''
         if not isinstance(docs, pd.Series):
             logger.warning("pd.Series is the prefered type for api.Preprocessor, other types might not be compatible with some Sklearn pipelines ")
-        return preprocess_pipeline(docs, pipeline=self.pipeline, prefered_column=self.prefered_column, modify_data=self.modify_data,
+        return _preprocess_transform(docs, pipeline=self.pipeline, prefered_column=self.prefered_column, modify_data=self.modify_data,
                                    chunksize=self.chunksize, first_row=self.first_row, columns=self.columns, sep=self.sep,
                                    nrows=self.nrows, **self.pandas_args)
 
@@ -215,14 +228,39 @@ def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFra
         ?: Preprocessed documents (the initial type is preserved except for str ending by .csv -> pd.DataFrame)
     '''
     logger.debug('Calling api.preprocess_pipeline')
-    if chunksize < 0:
-        raise ValueError("chunksize parameter must be >= 0")
-    if first_row not in ['header', 'data', 'skip']:
-        raise ValueError('first_row parameter must be one of header, data, or skip')
-    if nrows < 0:
-        raise ValueError('nrows parameter must be >= 0')
-    # Check the order of transformations in the pipeline, warnings are displayed if unexpected behaviours could occur
-    check_pipeline_order(pipeline)
+    preprocessor = PreProcessor( pipeline, prefered_column, modify_data, chunksize, first_row,
+                 columns, sep, nrows, **pandas_args)
+    return preprocessor.transform(docs)
+
+
+def _preprocess_transform(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame],
+                        pipeline: list = DEFAULT_PIPELINE, prefered_column: str = 'docs',
+                        modify_data: bool = True, chunksize: int = 0, first_row: str = 'header',
+                        columns: list = ['docs', 'tags'], sep: str = ',', nrows: int = 0,
+                        **pandas_args) -> Union[str, list, np.ndarray, pd.Series, pd.DataFrame]:
+    '''Preprocessing trasform
+    processing of the data once the initialisation has been performed
+    @deprecated: this function is going to be inserted in the PreProcessor
+    Args:
+        docs (?): Documents to be preprocessed (compatible types : str ending by .csv, str, list, np.ndarray, pd.Series, pd.DataFrame)
+    Kwargs:
+        pipeline (list): List of transformations to apply (from the USAGE dict) (default: DEFAULT_PIPELINE)
+        prefered_column (str): Default column name to consider as the document container when working with a pandas dataframe or csv file (default: 'docs')
+        modify_data (boolean): When working with a pandas dataframe or csv file, specifies wether the input data is modified or a new column is created (default: True)
+        chunksize (int): If not 0 the pipeline is processed chunkwise and this parameter specifies the chunksize (default : 0)
+        first_row (str): When working with a pandas dataframe or csv file, specifies how the first line is handled -'header', 'data' or 'skip' (default : 'header')
+        columns (list<str>) : When working with a pandas dataframe or csv file, specifies the columns to use, if first_row != 'header'. Truncate the data if there is too much columns & add some if they are missing (default : ['docs', 'tags'])
+        sep (str): When working with a pandas dataframe or csv file, specifies the csv separator (default: ',')
+        nrows (int) : When working with a pandas dataframe or csv file, specifies the maximum number of lines to read (default: 0 we take it all)
+        pandas_args : When working with a pandas dataframe or csv file, specifies arguments to pass to pandas
+    Raises:
+        ValueError: If chunksize < 0
+        ValueError: If first_row is different than 'header', 'data' or 'skip'
+        ValueError: If nrows < 0
+    Returns:
+        ?: Preprocessed documents (the initial type is preserved except for str ending by .csv -> pd.DataFrame)
+    '''
+
     # Get docs type
     docs_type = utils.get_docs_type(docs)
     # Get nb of elements to process

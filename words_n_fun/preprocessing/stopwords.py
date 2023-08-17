@@ -28,9 +28,9 @@ import os
 import nltk
 import pandas as pd
 from typing import Union
+import unicodedata
 
 from words_n_fun import utils
-from words_n_fun.preprocessing import basic
 
 # Get logger
 import logging
@@ -115,6 +115,56 @@ STOPWORDS_OFFRES_1 = ["recherche", "recherchons", "mission", "missions", "poste"
 STOPWORDS_OFFRES_2 = ["expérience", "assurer", "assurez", "travaux"]
 
 
+def remove_accents( texts: list) -> list:
+    return [''.join([c for c in unicodedata.normalize('NFD', t) if unicodedata.category(c) != 'Mn']) for t in texts]
+
+def stopwords_ascii() -> list:
+    ''' Returns stopwords list in ASCII format (without any special character nor accents)
+
+    Returns:
+        list: Stopwords in ASCII format
+    '''
+    logger.debug('Calling stopwords.stopwords_ascii')
+    # Process
+    return remove_accents(STOPWORDS_OFFRES_1)
+
+
+def stopwords_nltk(try_update: bool = False) -> list:
+    ''' Returns the list of FRENCH stopwords from the NLTK package.
+
+    Kwargs:
+        try_update (bool): Controls whether we shoud try to update (download required) the stopwords list.
+    Returns:
+        list: FRENCH stopwords from the NLTK package
+    '''
+    logger.debug('Calling stopwords.stopwords_nltk')
+    if try_update:
+        logger.debug("Trying to download an up to date list from NLTK.")
+        nltk.download('stopwords', quiet=True)
+    return nltk.corpus.stopwords.words('french')
+
+
+def stopwords_nltk_ascii() -> list:
+    ''' Returns the list of FRENCH stopwords from the NLTK package in ASCII format.
+
+    Kwargs:
+        try_update (bool): Controls whether we shoud try to update (download required) the stopwords list.
+    Returns:
+        list: FRENCH stopwords from the NLTK package in ASCII format
+    '''
+    logger.debug('Calling stopwords.stopwords_nltk_ascii')
+    # Process
+    return remove_accents(stopwords_nltk())
+
+
+STOPWORDS_OPTIONS = {
+    'none': set(),
+    'iso': set().union(STOPWORDS, stopwords_ascii()),
+    'nltk': set().union(stopwords_nltk(), stopwords_nltk_ascii()),
+    'offres_pe': set().union(STOPWORDS_OFFRES_1, STOPWORDS_OFFRES_2),
+    'all': set().union(STOPWORDS, stopwords_ascii(), stopwords_nltk(), stopwords_nltk_ascii()),
+}
+
 @utils.data_agnostic
 @utils.regroup_data_series
 def remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, None] = None,
@@ -148,19 +198,13 @@ def remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, 
         logger.warning(docs)
         logger.warning('Some characters appear to be in uppercase, stopwords are in lowercase only.')
     # Common soptwords lists
-    usage = {
-        'none': set(),
-        'iso': set().union(STOPWORDS, stopwords_ascii()),
-        'nltk': set().union(stopwords_nltk(), stopwords_nltk_ascii()),
-        'offres_pe': set().union(STOPWORDS_OFFRES_1, STOPWORDS_OFFRES_2),
-        'all': set().union(STOPWORDS, stopwords_ascii(), stopwords_nltk(), stopwords_nltk_ascii()),
-    }
 
-    if opt in usage.keys():
-        stopwords_list = list(usage.get(opt))
+
+    if opt in STOPWORDS_OPTIONS.keys():
+        stopwords_list = list(STOPWORDS_OPTIONS.get(opt))
     else:
         logger.warning(f"Option {opt} does not exist.")
-        logger.warning(f"Existing options are : {', '.join(usage.keys())}. ")
+        logger.warning(f"Existing options are : {', '.join(STOPWORDS_OPTIONS.keys())}. ")
         logger.warning("By default, all the stopwords are used.")
         stopwords_list = STOPWORDS
     # Add custom set
@@ -177,45 +221,6 @@ def remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, 
 
     regex = utils.get_regex_match_words(stopwords_list)
     return docs.str.replace(regex, '', regex=True)
-
-
-def stopwords_ascii() -> list:
-    ''' Returns stopwords list in ASCII format (without any special character nor accents)
-
-    Returns:
-        list: Stopwords in ASCII format
-    '''
-    logger.debug('Calling stopwords.stopwords_ascii')
-    # Process
-    return basic.remove_accents(STOPWORDS, use_tqdm=False)
-
-
-def stopwords_nltk(try_update: bool = False) -> list:
-    ''' Returns the list of FRENCH stopwords from the NLTK package.
-
-    Kwargs:
-        try_update (bool): Controls whether we shoud try to update (download required) the stopwords list.
-    Returns:
-        list: FRENCH stopwords from the NLTK package
-    '''
-    logger.debug('Calling stopwords.stopwords_nltk')
-    if try_update:
-        logger.debug("Trying to download an up to date list from NLTK.")
-        nltk.download('stopwords', quiet=True)
-    return nltk.corpus.stopwords.words('french')
-
-
-def stopwords_nltk_ascii() -> list:
-    ''' Returns the list of FRENCH stopwords from the NLTK package in ASCII format.
-
-    Kwargs:
-        try_update (bool): Controls whether we shoud try to update (download required) the stopwords list.
-    Returns:
-        list: FRENCH stopwords from the NLTK package in ASCII format
-    '''
-    logger.debug('Calling stopwords.stopwords_nltk_ascii')
-    # Process
-    return basic.remove_accents(stopwords_nltk(), use_tqdm=False)
 
 
 if __name__ == '__main__':

@@ -52,27 +52,27 @@ logger = logging.getLogger(__name__)
 # Some advices are specified in configs/pipeline_usage_order.json about how to order these transformations
 # They also act as warnings when some sequences of transformations might have some unexpected results
 USAGE = {
-    'notnull': basic.notnull,  # Replaces null values by an empty character
-    'remove_non_string': basic.remove_non_string,  # Replaces all non strings by an empty character
-    'get_true_spaces': basic.get_true_spaces,  # Replaces all whitespaces by a single space
-    'remove_accents': basic.remove_accents,  # Removes all accents and special characters (ç..)
-    'remove_stopwords': functools.partial(basic.remove_stopwords, opt='all'),  # Removes stopwords
-    'trim_string': basic.trim_string,  # Trims spaces: multiple spaces become one
-    'remove_leading_and_ending_spaces': basic.remove_leading_and_ending_spaces,  # Removes leading and trailing spaces
-    'remove_punct': functools.partial(basic.remove_punct, del_parenthesis=True, replacement_char=' '),  # Replaces all non alpha-numeric characters by spaces
-    'remove_punct_except_parenthesis': functools.partial(basic.remove_punct, del_parenthesis=False, replacement_char=' '),   # Replaces all non alpha-numeric characters by spaces EXCEPT parenthesis and slashes
-    'pe_matching': basic.pe_matching,  # Specific one-to-one tokens replacements
-    'to_lower': functools.partial(basic.to_lower, threshold_nb_chars=0),  # Transforms the string to lower case
-    'to_lower_except_singleletters': functools.partial(basic.to_lower, threshold_nb_chars=2),  # Transforms longer than 2 characters string to lower cases
-    'remove_numeric': functools.partial(basic.remove_numeric, replacement_char=' '),  # Replaces numeric strings by a space
-    'remove_gender_synonyms': basic.remove_gender_synonyms,  # [French] Removes gendered synonyms
-    'lemmatize': basic.lemmatize,  # Lemmatizes the document
-    'stemmatize': basic.stemmatize,  # Stemmatizes the words of the document
-    'add_point': basic.add_point,  # Adds a dot at the end of each line
-    'add_space_around_special': basic.deal_with_specific_characters,  # Ads spaces before and after some punctuations (, : ; .)
-    'replace_urls': basic.replace_urls,  # Replaces URLs by spaces
-    'replace_urls_with_domains': functools.partial(basic.replace_urls, replace_with_domain=True),  # Replaces URLs by their domain part
-    'fix_text': basic.fix_text,  # Fixes numerous inconsistencies within a text (via ftfy)
+    'notnull': basic.impl_notnull,  # Replaces null values by an empty character
+    'remove_non_string': basic.impl_remove_non_string,  # Replaces all non strings by an empty character
+    'get_true_spaces': basic.impl_get_true_spaces,  # Replaces all whitespaces by a single space
+    'remove_accents': basic.impl_remove_accents,  # Removes all accents and special characters (ç..)
+    'remove_stopwords': functools.partial(basic.impl_remove_stopwords, opt='all'),  # Removes stopwords
+    'trim_string': basic.impl_trim_string,  # Trims spaces: multiple spaces become one
+    'remove_leading_and_ending_spaces': basic.impl_remove_leading_and_ending_spaces,  # Removes leading and trailing spaces
+    'remove_punct': functools.partial(basic.impl_remove_punct, del_parenthesis=True, replacement_char=' '),  # Replaces all non alpha-numeric characters by spaces
+    'remove_punct_except_parenthesis': functools.partial(basic.impl_remove_punct, del_parenthesis=False, replacement_char=' '),   # Replaces all non alpha-numeric characters by spaces EXCEPT parenthesis and slashes
+    'pe_matching': basic.impl_pe_matching,  # Specific one-to-one tokens replacements
+    'to_lower': functools.partial(basic.impl_to_lower, threshold_nb_chars=0),  # Transforms the string to lower case
+    'to_lower_except_singleletters': functools.partial(basic.impl_to_lower, threshold_nb_chars=2),  # Transforms longer than 2 characters string to lower cases
+    'remove_numeric': functools.partial(basic.impl_remove_numeric, replacement_char=' '),  # Replaces numeric strings by a space
+    'remove_gender_synonyms': basic.impl_remove_gender_synonyms,  # [French] Removes gendered synonyms
+    'lemmatize': basic.impl_lemmatize,  # Lemmatizes the document
+    'stemmatize': basic.impl_stemmatize,  # Stemmatizes the words of the document
+    'add_point': basic.impl_add_point,  # Adds a dot at the end of each line
+    'add_space_around_special': basic.impl_deal_with_specific_characters,  # Ads spaces before and after some punctuations (, : ; .)
+    'replace_urls': basic.impl_replace_urls,  # Replaces URLs by spaces
+    'replace_urls_with_domains': functools.partial(basic.impl_replace_urls, replace_with_domain=True),  # Replaces URLs by their domain part
+    'fix_text': basic.impl_fix_text,  # Fixes numerous inconsistencies within a text (via ftfy)
 }
 
 
@@ -171,6 +171,22 @@ def get_preprocessor(pipeline: list = DEFAULT_PIPELINE, prefered_column: str = '
                         chunksize=chunksize, first_row=first_row, columns=columns, sep=sep,
                         nrows=nrows, **pandas_args)
 
+@utils.data_agnostic
+def process_block_of_data(chunk: pd.Series, pipeline: list, max_chunksize: int):
+    """ sub function to call a small block of data"""
+    for item in pipeline:
+        # If item is a string, we apply the corresponding function from USAGE
+        if item in USAGE.keys():
+            logger.info(f"Preprocessing: step {item}")
+            chunk = USAGE[item](chunk)
+        # If it's a callable, it is directly called
+        elif callable(item):
+            logger.info(f"Preprocessing: step {item}")
+            chunk = item(chunk)
+        # gc collect if more than a thousand elements (improve memory usage)
+        if max_chunksize >= 1000:
+            gc.collect()
+    return chunk
 
 def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame],
                         pipeline: list = DEFAULT_PIPELINE, prefered_column: str = 'docs',
@@ -234,6 +250,9 @@ def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFra
         column_to_write = utils.get_new_column_name(list(docs_copy.columns), docs_column) if not modify_data else docs_column
     docs_outputs = []  # Will contain the reults of the preprocessing pipeline if we are note working with csv files
     # Chunk iteration
+
+        
+
     for i, docs_gen in enumerate(gen):
         if chunksize != 0:
             logger.info(f"Processing chunck n°{i + 1}:")
@@ -243,18 +262,7 @@ def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFra
         else:
             docs_input = docs_gen
         # Sequential processing of all the pipeline transformations
-        for item in pipeline:
-            # If item is a string, we apply the corresponding function from USAGE
-            if item in USAGE.keys():
-                logger.info(f"Preprocessing: step {item}")
-                docs_input = USAGE[item](docs_input)
-            # If it's a callable, it is directly called
-            elif callable(item):
-                logger.info(f"Preprocessing: step {item}")
-                docs_input = item(docs_input)
-            # gc collect if more than a thousand elements (improve memory usage)
-            if max_chunksize >= 1000:
-                gc.collect()
+        docs_input=process_block_of_data(docs_input, pipeline, max_chunksize)
         # If working with a file, we append the processed chunk to the newly created result file
         if docs_type == 'file_path':
             docs_gen[column_to_write] = docs_input

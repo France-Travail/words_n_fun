@@ -665,7 +665,7 @@ def regroup_data_series(function: Callable, min_nb_data:int = 1000, prefix_text:
     Kwargs:
         min_nb_data (int): Minimum number of rows within the document required to apply this wrapper (default : 1000)
         prefix_text (str): Prefix to add
-        min_percent_unique (float): value [0-1] percentage of unique values to perform reduction 
+        max_percent_unique (float): value [0-1] percentage of unique values to perform reduction 
                             for very quick functions min_percent_unique should be low to have a real speed up
     Returns:
         function: Decorated function

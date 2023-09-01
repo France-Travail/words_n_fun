@@ -38,19 +38,19 @@
 # - fix_text -> Fixes numerous inconsistencies within a text (via ftfy)
 
 
-import ftfy
 import logging
 import unicodedata
-import pandas as pd
+from typing import List, Union
+
+import ftfy
 import numpy as np
-from typing import Union, List
+import pandas as pd
 from nltk.stem.snowball import FrenchStemmer
 
-from words_n_fun import utils
 from words_n_fun import CustomTqdm as tqdm
-from words_n_fun.preprocessing import stopwords
-from words_n_fun.preprocessing import lemmatizer
-from words_n_fun.preprocessing import synonym_malefemale_replacement
+from words_n_fun import utils
+from words_n_fun.preprocessing import (lemmatizer, stopwords,
+                                       synonym_malefemale_replacement)
 
 tqdm.pandas()
 
@@ -314,7 +314,6 @@ def remove_numeric(docs: pd.Series, replacement_char: str = ' ') -> pd.Series:
     logger.debug('Calling basic.remove_numeric')
     return impl_remove_numeric(docs, replacement_char)
 
-@utils.regroup_data_series
 def impl_remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[list, None] = None,
                      set_to_remove: Union[list, None] = None) -> pd.Series:
     '''Removes stopwords
@@ -328,6 +327,7 @@ def impl_remove_stopwords(docs: pd.Series, opt: str = 'all', set_to_add: Union[l
     Returns:
         pd.Series: Modified documents
     '''
+    # stopwords.remove_stopwords use data_agnostic and regroup_data_series wrappers already
     return stopwords.remove_stopwords(docs, opt=opt, set_to_add=set_to_add, set_to_remove=set_to_remove)
 
 
@@ -380,7 +380,6 @@ def remove_accents(docs: pd.Series, use_tqdm: bool = False) -> pd.Series:
     '''
     return impl_remove_accents(docs, use_tqdm)
 
-@utils.regroup_data_series
 def impl_remove_gender_synonyms(docs: pd.Series) -> pd.Series:
     '''[French] Removes gendered synonyms
     # Find occurences such as "male version / female version" (eg: Coiffeur / Coiffeuse)
@@ -392,6 +391,7 @@ def impl_remove_gender_synonyms(docs: pd.Series) -> pd.Series:
     Returns:
         pd.Series: Modified documents
     '''
+    # synonym_malefemale_replacement.remove_gender_synonyms uses data_agnostic and regroup_data_series wrappers already
     return synonym_malefemale_replacement.remove_gender_synonyms(docs)
 
 

@@ -23,7 +23,7 @@ package_directory = os.path.dirname(os.path.abspath(__file__))
 version_path = os.path.join(package_directory, 'version.txt')
 with open(version_path, 'r') as version_file:
     version = version_file.read().strip()
-version = os.getenv('VERSION') or f"{version}-local"
+version = os.getenv('VERSION') or f"{version}+local"
 
 # Get package description
 readme_path = os.path.join(package_directory, 'README.md')

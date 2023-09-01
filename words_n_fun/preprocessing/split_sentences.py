@@ -77,7 +77,7 @@ def split_sentences(text: str) -> List[str]:
     return text_list
 
 
-def split_sentences_df(df: pd.DataFrame, col: Union[str, int]) -> pd.DataFrame:
+def split_sentences_df(df: pd.DataFrame, col: Union[str, int], use_tqdm: bool = False) -> pd.DataFrame:
     '''Function to split several texts from a pandas DataFrame into sentences
 
     Args:
@@ -87,7 +87,11 @@ def split_sentences_df(df: pd.DataFrame, col: Union[str, int]) -> pd.DataFrame:
         pd.DataFrame: New DataFrame with the text split into sentences
     '''
     df2 = df.copy()
-    df2[col] = df2[col].progress_apply(split_sentences)
+    if use_tqdm:
+        df2[col] = df2[col].progress_apply(split_sentences)
+    else:
+        df2[col] = df2[col].apply(split_sentences)
+        
     return df2.explode(col).reset_index(drop=True)
 
 

@@ -52,27 +52,27 @@ logger = logging.getLogger(__name__)
 # Some advices are specified in configs/pipeline_usage_order.json about how to order these transformations
 # They also act as warnings when some sequences of transformations might have some unexpected results
 USAGE = {
-    'notnull': basic.notnull,  # Replaces null values by an empty character
-    'remove_non_string': basic.remove_non_string,  # Replaces all non strings by an empty character
-    'get_true_spaces': basic.get_true_spaces,  # Replaces all whitespaces by a single space
-    'remove_accents': basic.remove_accents,  # Removes all accents and special characters (ç..)
-    'remove_stopwords': functools.partial(basic.remove_stopwords, opt='all'),  # Removes stopwords
-    'trim_string': basic.trim_string,  # Trims spaces: multiple spaces become one
-    'remove_leading_and_ending_spaces': basic.remove_leading_and_ending_spaces,  # Removes leading and trailing spaces
-    'remove_punct': functools.partial(basic.remove_punct, del_parenthesis=True, replacement_char=' '),  # Replaces all non alpha-numeric characters by spaces
-    'remove_punct_except_parenthesis': functools.partial(basic.remove_punct, del_parenthesis=False, replacement_char=' '),   # Replaces all non alpha-numeric characters by spaces EXCEPT parenthesis and slashes
-    'pe_matching': basic.pe_matching,  # Specific one-to-one tokens replacements
-    'to_lower': functools.partial(basic.to_lower, threshold_nb_chars=0),  # Transforms the string to lower case
-    'to_lower_except_singleletters': functools.partial(basic.to_lower, threshold_nb_chars=2),  # Transforms longer than 2 characters string to lower cases
-    'remove_numeric': functools.partial(basic.remove_numeric, replacement_char=' '),  # Replaces numeric strings by a space
-    'remove_gender_synonyms': basic.remove_gender_synonyms,  # [French] Removes gendered synonyms
-    'lemmatize': basic.lemmatize,  # Lemmatizes the document
-    'stemmatize': basic.stemmatize,  # Stemmatizes the words of the document
-    'add_point': basic.add_point,  # Adds a dot at the end of each line
-    'add_space_around_special': basic.deal_with_specific_characters,  # Ads spaces before and after some punctuations (, : ; .)
-    'replace_urls': basic.replace_urls,  # Replaces URLs by spaces
-    'replace_urls_with_domains': functools.partial(basic.replace_urls, replace_with_domain=True),  # Replaces URLs by their domain part
-    'fix_text': basic.fix_text,  # Fixes numerous inconsistencies within a text (via ftfy)
+    'notnull': basic.impl_notnull,  # Replaces null values by an empty character
+    'remove_non_string': basic.impl_remove_non_string,  # Replaces all non strings by an empty character
+    'get_true_spaces': basic.impl_get_true_spaces,  # Replaces all whitespaces by a single space
+    'remove_accents': basic.impl_remove_accents,  # Removes all accents and special characters (ç..)
+    'remove_stopwords': functools.partial(basic.impl_remove_stopwords, opt='all'),  # Removes stopwords
+    'trim_string': basic.impl_trim_string,  # Trims spaces: multiple spaces become one
+    'remove_leading_and_ending_spaces': basic.impl_remove_leading_and_ending_spaces,  # Removes leading and trailing spaces
+    'remove_punct': functools.partial(basic.impl_remove_punct, del_parenthesis=True, replacement_char=' '),  # Replaces all non alpha-numeric characters by spaces
+    'remove_punct_except_parenthesis': functools.partial(basic.impl_remove_punct, del_parenthesis=False, replacement_char=' '),   # Replaces all non alpha-numeric characters by spaces EXCEPT parenthesis and slashes
+    'pe_matching': basic.impl_pe_matching,  # Specific one-to-one tokens replacements
+    'to_lower': functools.partial(basic.impl_to_lower, threshold_nb_chars=0),  # Transforms the string to lower case
+    'to_lower_except_singleletters': functools.partial(basic.impl_to_lower, threshold_nb_chars=2),  # Transforms longer than 2 characters string to lower cases
+    'remove_numeric': functools.partial(basic.impl_remove_numeric, replacement_char=' '),  # Replaces numeric strings by a space
+    'remove_gender_synonyms': basic.impl_remove_gender_synonyms,  # [French] Removes gendered synonyms
+    'lemmatize': basic.impl_lemmatize,  # Lemmatizes the document
+    'stemmatize': basic.impl_stemmatize,  # Stemmatizes the words of the document
+    'add_point': basic.impl_add_point,  # Adds a dot at the end of each line
+    'add_space_around_special': basic.impl_deal_with_specific_characters,  # Ads spaces before and after some punctuations (, : ; .)
+    'replace_urls': basic.impl_replace_urls,  # Replaces URLs by spaces
+    'replace_urls_with_domains': functools.partial(basic.impl_replace_urls, replace_with_domain=True),  # Replaces URLs by their domain part
+    'fix_text': basic.impl_fix_text,  # Fixes numerous inconsistencies within a text (via ftfy)
 }
 
 
@@ -128,7 +128,20 @@ class PreProcessor():
         self.sep = sep
         self.nrows = nrows
         self.pandas_args = pandas_args
+    
+    @property
+    def pipeline(self):
+        ''' Getter for pipeline property'''
+        return self._pipeline
 
+    @pipeline.setter
+    def pipeline(self, value):
+        ''' Setter for pipeline
+        Ther order of parameters is checked when necessary'''
+        self._pipeline = value
+        # Check the order of transformations in the pipeline, warnings are displayed if unexpected behaviours could occur
+        check_pipeline_order(self._pipeline)
+    
     def fit(self):
         '''Required to be compatible with Sklearn pipelines'''
         pass
@@ -143,7 +156,7 @@ class PreProcessor():
         '''
         if not isinstance(docs, pd.Series):
             logger.warning("pd.Series is the prefered type for api.Preprocessor, other types might not be compatible with some Sklearn pipelines ")
-        return preprocess_pipeline(docs, pipeline=self.pipeline, prefered_column=self.prefered_column, modify_data=self.modify_data,
+        return _preprocess_transform(docs, pipeline=self.pipeline, prefered_column=self.prefered_column, modify_data=self.modify_data,
                                    chunksize=self.chunksize, first_row=self.first_row, columns=self.columns, sep=self.sep,
                                    nrows=self.nrows, **self.pandas_args)
 
@@ -171,6 +184,22 @@ def get_preprocessor(pipeline: list = DEFAULT_PIPELINE, prefered_column: str = '
                         chunksize=chunksize, first_row=first_row, columns=columns, sep=sep,
                         nrows=nrows, **pandas_args)
 
+@utils.data_agnostic
+def process_block_of_data(chunk: pd.Series, pipeline: list, max_chunksize: int):
+    """ sub function to call a small block of data"""
+    for item in pipeline:
+        # If item is a string, we apply the corresponding function from USAGE
+        if item in USAGE.keys():
+            logger.info(f"Preprocessing: step {item}")
+            chunk = USAGE[item](chunk)
+        # If it's a callable, it is directly called
+        elif callable(item):
+            logger.info(f"Preprocessing: step {item}")
+            chunk = item(chunk)
+        # gc collect if more than a thousand elements (improve memory usage)
+        if max_chunksize >= 1000:
+            gc.collect()
+    return chunk
 
 def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame],
                         pipeline: list = DEFAULT_PIPELINE, prefered_column: str = 'docs',
@@ -199,14 +228,39 @@ def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFra
         ?: Preprocessed documents (the initial type is preserved except for str ending by .csv -> pd.DataFrame)
     '''
     logger.debug('Calling api.preprocess_pipeline')
-    if chunksize < 0:
-        raise ValueError("chunksize parameter must be >= 0")
-    if first_row not in ['header', 'data', 'skip']:
-        raise ValueError('first_row parameter must be one of header, data, or skip')
-    if nrows < 0:
-        raise ValueError('nrows parameter must be >= 0')
-    # Check the order of transformations in the pipeline, warnings are displayed if unexpected behaviours could occur
-    check_pipeline_order(pipeline)
+    preprocessor = PreProcessor( pipeline, prefered_column, modify_data, chunksize, first_row,
+                 columns, sep, nrows, **pandas_args)
+    return preprocessor.transform(docs)
+
+
+def _preprocess_transform(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFrame],
+                        pipeline: list = DEFAULT_PIPELINE, prefered_column: str = 'docs',
+                        modify_data: bool = True, chunksize: int = 0, first_row: str = 'header',
+                        columns: list = ['docs', 'tags'], sep: str = ',', nrows: int = 0,
+                        **pandas_args) -> Union[str, list, np.ndarray, pd.Series, pd.DataFrame]:
+    '''Preprocessing trasform
+    processing of the data once the initialisation has been performed
+    @deprecated: this function is going to be inserted in the PreProcessor
+    Args:
+        docs (?): Documents to be preprocessed (compatible types : str ending by .csv, str, list, np.ndarray, pd.Series, pd.DataFrame)
+    Kwargs:
+        pipeline (list): List of transformations to apply (from the USAGE dict) (default: DEFAULT_PIPELINE)
+        prefered_column (str): Default column name to consider as the document container when working with a pandas dataframe or csv file (default: 'docs')
+        modify_data (boolean): When working with a pandas dataframe or csv file, specifies wether the input data is modified or a new column is created (default: True)
+        chunksize (int): If not 0 the pipeline is processed chunkwise and this parameter specifies the chunksize (default : 0)
+        first_row (str): When working with a pandas dataframe or csv file, specifies how the first line is handled -'header', 'data' or 'skip' (default : 'header')
+        columns (list<str>) : When working with a pandas dataframe or csv file, specifies the columns to use, if first_row != 'header'. Truncate the data if there is too much columns & add some if they are missing (default : ['docs', 'tags'])
+        sep (str): When working with a pandas dataframe or csv file, specifies the csv separator (default: ',')
+        nrows (int) : When working with a pandas dataframe or csv file, specifies the maximum number of lines to read (default: 0 we take it all)
+        pandas_args : When working with a pandas dataframe or csv file, specifies arguments to pass to pandas
+    Raises:
+        ValueError: If chunksize < 0
+        ValueError: If first_row is different than 'header', 'data' or 'skip'
+        ValueError: If nrows < 0
+    Returns:
+        ?: Preprocessed documents (the initial type is preserved except for str ending by .csv -> pd.DataFrame)
+    '''
+
     # Get docs type
     docs_type = utils.get_docs_type(docs)
     # Get nb of elements to process
@@ -234,6 +288,9 @@ def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFra
         column_to_write = utils.get_new_column_name(list(docs_copy.columns), docs_column) if not modify_data else docs_column
     docs_outputs = []  # Will contain the reults of the preprocessing pipeline if we are note working with csv files
     # Chunk iteration
+
+        
+
     for i, docs_gen in enumerate(gen):
         if chunksize != 0:
             logger.info(f"Processing chunck n°{i + 1}:")
@@ -243,18 +300,7 @@ def preprocess_pipeline(docs: Union[str, list, np.ndarray, pd.Series, pd.DataFra
         else:
             docs_input = docs_gen
         # Sequential processing of all the pipeline transformations
-        for item in pipeline:
-            # If item is a string, we apply the corresponding function from USAGE
-            if item in USAGE.keys():
-                logger.info(f"Preprocessing: step {item}")
-                docs_input = USAGE[item](docs_input)
-            # If it's a callable, it is directly called
-            elif callable(item):
-                logger.info(f"Preprocessing: step {item}")
-                docs_input = item(docs_input)
-            # gc collect if more than a thousand elements (improve memory usage)
-            if max_chunksize >= 1000:
-                gc.collect()
+        docs_input=process_block_of_data(docs_input, pipeline, max_chunksize)
         # If working with a file, we append the processed chunk to the newly created result file
         if docs_type == 'file_path':
             docs_gen[column_to_write] = docs_input

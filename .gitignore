@@ -11,3 +11,4 @@ dist/**
 build/**
 *-checkpoint.ipynb
 tutorial/comments_*.csv
+*pyc

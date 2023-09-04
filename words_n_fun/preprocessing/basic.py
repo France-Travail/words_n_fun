@@ -38,13 +38,14 @@
 # - fix_text -> Fixes numerous inconsistencies within a text (via ftfy)
 
 
-import logging
-import unicodedata
-from typing import List, Union
+
 
 import ftfy
+import logging
+import unicodedata
 import numpy as np
 import pandas as pd
+from typing import List, Union
 from nltk.stem.snowball import FrenchStemmer
 
 from words_n_fun import CustomTqdm as tqdm

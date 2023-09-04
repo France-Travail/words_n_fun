@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# coding=utf-8
 
 ## Tests - unit test of utils functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
@@ -28,7 +29,7 @@ import re
 
 # Libs unittest
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
@@ -510,6 +511,8 @@ class UtilsTests(unittest.TestCase):
         docs_results =  pd.Series(['avant'] + ["test"] * 5000 + ['milieu'] + ["test"] * 5000 + ['après'], name='test')
         data_no_duplicates = pd.Series(['avant'] + ["ceci est un test"] + ['milieu'] + ['après'], name='test')
         data_no_duplicates_results = pd.Series(['avant'] + ["test"] + ['milieu'] + ['après'], name='test')
+        data_not_enough_duplicates = pd.Series(['avant'] + [f"ceci est un test {i}" for i in range(10)] + ['milieu']*2 + ['après'], name='test')
+        data_not_enough_duplicates_results = pd.Series(['avant'] + ["test" for i in range(10)] + ['milieu'] * 2 + ['après'], name='test')
 
 
         # Vérification du fonctionnement type
@@ -520,6 +523,11 @@ class UtilsTests(unittest.TestCase):
         pd.testing.assert_series_equal(docs_test, docs_test_copy)
         # Vérification fonctionnement quand pas de doublons
         pd.testing.assert_series_equal(utils.regroup_data_series(test_function, min_nb_data=1)(data_no_duplicates), data_no_duplicates_results)
+        # Vérification du foctionnement pas assez de doublons
+        pd.testing.assert_series_equal(utils.regroup_data_series(test_function, min_nb_data=1, max_percent_unique=0.5)(data_not_enough_duplicates), data_not_enough_duplicates_results)
+
+
+
 
 
     def test_regroup_data_df(self):

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# coding=utf-8
 
 ## Test - unit test of split sentences functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
@@ -19,12 +20,9 @@
 
 # Libs unittest
 import unittest
-from unittest.mock import Mock
-from unittest.mock import patch
 
 # utils libs
 import os
-import numpy as np
 import pandas as pd
 from words_n_fun.preprocessing import split_sentences
 

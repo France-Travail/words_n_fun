@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# coding=utf-8
 
 ## Tests - unit test of api functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
@@ -19,14 +20,12 @@
 
 # Libs unittest
 import unittest
-from unittest.mock import Mock
 from unittest.mock import patch
 
 # Utils libs
 import os
 import functools
 import importlib
-import numpy as np
 import pandas as pd
 from words_n_fun import utils
 from words_n_fun.preprocessing import api
@@ -68,6 +67,14 @@ class ApiTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             api.get_preprocessor(nrows=-3)
 
+    def test_preprocessor_pipeline_setter(self):
+        preprocessor = api.get_preprocessor(pipeline=api.DEFAULT_PIPELINE)
+        # test getter
+        self.assertEquals(preprocessor.pipeline, api.DEFAULT_PIPELINE)
+        # modify pipeline
+        alt_pipeline = api.DEFAULT_PIPELINE[:-2]
+        preprocessor.pipeline = alt_pipeline
+        self.assertEquals(preprocessor.pipeline, alt_pipeline)
 
     def test_preprocess_pipeline(self):
         '''Testing function api.preprocess_pipeline'''
@@ -308,6 +315,28 @@ class ApiTests(unittest.TestCase):
 
         # Vérification du fonctionnement type
         pd.testing.assert_series_equal(api.list_one_appearance_word(pd.Series(docs)), wanted_result)
+
+    def test_process_block_of_data(self):
+            # first test, sans changement
+            docs = pd.Series(["\tCeci est un test de la fonction list_one_appearance_word", 
+                    "il s agit d une fonction Aui compte les mots dans une Serie pandas ", 
+                    " test compte ok Test"])
+            expected = pd.Series(["\tCeci est un test de la fonction list_one_appearance_word", 
+                    "il s agit d une fonction Aui compte les mots dans une Serie pandas ", 
+                    " test compte ok Test"])
+            result = api.process_block_of_data(docs, ['notnull', 'remove_non_string'], -1)
+            pd.testing.assert_series_equal(expected, result)
+
+            # second test, avec changement
+            docs = pd.Series(["\tCeci est un test de la fonction list_one_appearance_word", 
+                    "il s agit d une fonction Aui compte les mots dans une Serie pandas ", 
+                    " test compte ok Test"])            
+            expected = pd.Series(["ceci est un test de la fonction list_one_appearance_word", 
+                    "il s agit d une fonction aui compte les mots dans une serie pandas", 
+                    "test compte ok test"])
+            result = api.process_block_of_data(docs, ['to_lower', 'trim_string'], -1)
+            pd.testing.assert_series_equal(result, expected)
+
 
 
 

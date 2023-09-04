@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+# coding=utf-8
 ## Tests - unit test of basic functions
 # Copyright (C) <2018-2022>  <Agence Data Services, DSI Pôle Emploi>
 #
@@ -19,7 +19,6 @@
 
 # Libs unittest
 import unittest
-from unittest.mock import Mock
 from unittest.mock import patch
 
 # Utils libs

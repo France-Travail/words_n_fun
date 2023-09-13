@@ -114,7 +114,7 @@ output_list = preprocessor.transform(input_list)
 ## Best Practices & guidelines
 
 Contributors must try their best to follow these mainstream guidelines :
-1. Module management [[https://docs.python.org/3.9/tutorial/modules.htm](https://docs.python.org/3.9/tutorial/modules.html)
+1. Module management https://docs.python.org/3.9/tutorial/modules.html
 2. Python development https://github.com/google/styleguide/blob/gh-pages/pyguide.md, https://www.python.org/dev/peps/pep-0008/
 3. All the preprocessing functions must take pd.Series data as input. The built-in utils.data_agnostic decorator allows the user to send different types of data but the actual function carrying out these transformation should be built around pd.Series.
 

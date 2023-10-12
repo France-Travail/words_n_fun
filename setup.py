@@ -60,7 +60,7 @@ setup(
         'requests>=2.23,<2.29',
     ],
     extras_require={
-        "lemmatizer": ["spacy==3.3.1", "markupsafe==2.0.1", "Cython==0.29.24", "fr-core-news-sm==3.3.0"]
+        "lemmatizer": ["spacy==3.3.3", "markupsafe==2.0.1", "Cython==0.29.24", "fr-core-news-sm==3.3.0"]
     }
     # pip install words_n_fun || pip install words_n_fun[lemmatizer]
 )

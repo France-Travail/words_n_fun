@@ -94,7 +94,7 @@ class UtilsTests(unittest.TestCase):
         '''Testing function utils.data_agnostic'''
         # Definition d'une fonction à décorer
         def test_function(docs):
-            if type(docs) != pd.Series: raise TypeError('')
+            if not isinstance(docs, pd.Series): raise TypeError('')
             return docs.apply(lambda x: 'test')
         # Vals à tester
         test_str = "ceci est un test"
@@ -159,7 +159,7 @@ class UtilsTests(unittest.TestCase):
         '''Testing function utils.data_agnostic_input'''
         # Definition d'une fonction à décorer
         def test_function(docs):
-            if type(docs) != pd.Series: raise TypeError('')
+            if not isinstance(docs, pd.Series): raise TypeError('')
             return docs.apply(lambda x: 'test')
         # Vals à tester
         test_str = "ceci est un test"
@@ -503,7 +503,7 @@ class UtilsTests(unittest.TestCase):
         '''Testing function utils.regroup_data_series'''
         # Definition d'une fonction à décorer
         def test_function(docs):
-            if type(docs) != pd.Series: raise TypeError('')
+            if not isinstance(docs, pd.Series): raise TypeError('')
             return docs.apply(lambda x: x if x in ['avant', 'milieu', 'après'] else 'test')
         # Vals à tester
         docs_test = pd.Series(['avant'] + ["ceci est un test"] * 5000 + ['milieu'] + ["ceci est un test"] * 5000 + ['après'], name='test')
@@ -534,11 +534,11 @@ class UtilsTests(unittest.TestCase):
         '''Testing function utils.regroup_data_df'''
         # Definition d'une fonction à wrapper
         def test_function_1(df):
-            if type(df) != pd.DataFrame: raise TypeError('')
+            if not isinstance(df, pd.DataFrame): raise TypeError('')
             df['test1'] = df['test1'].str.replace('toto', 'titi', regex=False)
             return df
         def test_function_2(df):
-            if type(df) != pd.DataFrame: raise TypeError('')
+            if not isinstance(df, pd.DataFrame): raise TypeError('')
             df['test3'] = df['test2'].str.replace('toto', 'tata', regex=False)
             return df
         # Vals à tester

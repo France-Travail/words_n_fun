@@ -27,10 +27,8 @@ try:
     import spacy
 except ModuleNotFoundError:
     raise unittest.SkipTest("Skipping all lemmatizer tests as spacy can't be imported.")
-import importlib
 import numpy as np
 import pandas as pd
-from words_n_fun import utils
 from words_n_fun.preprocessing import lemmatizer
 
 # Disable logging
@@ -40,13 +38,6 @@ logging.disable(logging.CRITICAL)
 
 class LemmatizerTests(unittest.TestCase):
     '''Main class to test all functions in lemmatizer.py.'''
-
-    # Mock du decorateur DataAgnostic (on le bypass pour les tests)
-    default_decorator = lambda f: f
-    utils.data_agnostic = default_decorator
-    utils.data_agnostic_input = default_decorator
-    # Reload de la librairie lemmatizer (pour application du decorateur par defaut)
-    importlib.reload(lemmatizer)
 
 
     def setUp(self):

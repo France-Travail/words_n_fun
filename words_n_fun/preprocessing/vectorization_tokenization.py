@@ -30,7 +30,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@utils.data_agnostic
 def split_text_into_tokens(docs: pd.Series, nbech: int = 10, seq_size: int = 3, step: int = 1,
                            granularity: str = "word") -> Tuple[pd.Series, pd.Series]:
     '''Split an input text into seq_size tokens (word or char) with at most nbech tokens

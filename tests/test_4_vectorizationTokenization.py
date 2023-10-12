@@ -23,10 +23,8 @@ import unittest
 
 # Utils libs
 import os
-import importlib
 import numpy as np
 import pandas as pd
-from words_n_fun import utils
 from words_n_fun.preprocessing import vectorization_tokenization
 
 # Disable logging
@@ -34,15 +32,9 @@ import logging
 logging.disable(logging.CRITICAL)
 
 
+
 class VectorizationTokenizationTests(unittest.TestCase):
     '''Main class to test all functions in vectorization_tokenization.py.'''
-
-    # Mock du decorateur DataAgnostic (on le bypass pour les tests)
-    default_decorator = lambda f: f
-    utils.data_agnostic = default_decorator
-    utils.data_agnostic_input = default_decorator
-    # Reload de la librairie vectorization_tokenization (pour application du decorateur par defaut)
-    importlib.reload(vectorization_tokenization)
 
 
     def setUp(self):

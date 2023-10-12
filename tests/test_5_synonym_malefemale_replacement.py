@@ -23,10 +23,8 @@ import unittest
 
 # Utils libs
 import os
-import importlib
 import numpy as np
 import pandas as pd
-from words_n_fun import utils
 from words_n_fun.preprocessing import synonym_malefemale_replacement
 
 # Disable logging
@@ -36,13 +34,6 @@ logging.disable(logging.CRITICAL)
 
 class SynonymTests(unittest.TestCase):
     '''Main class to test all functions in synonym_malefemale_replacement.py'''
-
-    # Mock du decorateur DataAgnostic (on le bypass pour les tests)
-    default_decorator = lambda f: f
-    utils.data_agnostic = default_decorator
-    utils.data_agnostic_input = default_decorator
-    # Reload de la librairie basic (pour application du decorateur par defaut)
-    importlib.reload(synonym_malefemale_replacement)
 
 
     def setUp(self):

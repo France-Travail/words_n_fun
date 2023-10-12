@@ -70,11 +70,11 @@ class ApiTests(unittest.TestCase):
     def test_preprocessor_pipeline_setter(self):
         preprocessor = api.get_preprocessor(pipeline=api.DEFAULT_PIPELINE)
         # test getter
-        self.assertEquals(preprocessor.pipeline, api.DEFAULT_PIPELINE)
+        self.assertEqual(preprocessor.pipeline, api.DEFAULT_PIPELINE)
         # modify pipeline
         alt_pipeline = api.DEFAULT_PIPELINE[:-2]
         preprocessor.pipeline = alt_pipeline
-        self.assertEquals(preprocessor.pipeline, alt_pipeline)
+        self.assertEqual(preprocessor.pipeline, alt_pipeline)
 
     def test_preprocess_pipeline(self):
         '''Testing function api.preprocess_pipeline'''

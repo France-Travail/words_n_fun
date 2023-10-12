@@ -50,17 +50,19 @@ setup(
     include_package_data=True,
     install_requires=[
         'pandas>=1.3,<1.4; python_version < "3.8"',
-        'pandas>=1.3,<1.5; python_version >= "3.8"',
+        'pandas>=1.3,<1.5; python_version == "3.8"',
+        'pandas>=1.3; python_version >= "3.10"',
         'numpy>=1.19,<1.22; python_version < "3.8"',
-        'numpy>=1.19,<1.24; python_version >= "3.8"',
-        'nltk>=3.4,<3.8',
-        'ftfy>=5.8,<6.2',
-        'tqdm>=4.40,<4.65',
-        'simplejson>=3.17,<3.18',
-        'requests>=2.23,<2.29',
+        'numpy>=1.19,<1.24; python_version == "3.8"',
+        'numpy>=1.19; python_version >= "3.10"',
+        'nltk>=3.4',
+        'ftfy>=5.8',
+        'tqdm>=4.40',
+        'simplejson>=3.17',
+        'requests>=2.23',
     ],
     extras_require={
-        "lemmatizer": ["spacy==3.3.3", "markupsafe==2.0.1", "Cython==0.29.24", "fr-core-news-sm==3.3.0"]
+        "lemmatizer": ["spacy>=3.3.3", "markupsafe>=2.0.1", "Cython>=0.29.24", "fr-core-news-sm==3.3.0"]
     }
     # pip install words_n_fun || pip install words_n_fun[lemmatizer]
 )

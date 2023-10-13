@@ -51,9 +51,11 @@ setup(
     install_requires=[
         'pandas>=1.3,<1.4; python_version < "3.8"',
         'pandas>=1.3,<1.5; python_version == "3.8"',
+        'pandas>=1.3,<1.5; python_version == "3.9"',
         'pandas>=1.3; python_version >= "3.10"',
         'numpy>=1.19,<1.22; python_version < "3.8"',
         'numpy>=1.19,<1.24; python_version == "3.8"',
+        'numpy>=1.19,<1.24; python_version == "3.9"',
         'numpy>=1.19; python_version >= "3.10"',
         'nltk>=3.4',
         'ftfy>=5.8',

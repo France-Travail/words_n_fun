@@ -56,11 +56,11 @@ setup(
         'nltk>=3.4',
         'ftfy>=5.8',
         'tqdm>=4.40',
-        'simplejson>=3.17',
+        'simplejson>=3.17', 
         'requests>=2.23',
     ],
     extras_require={
-        "lemmatizer": ["spacy>=3.3.3", "markupsafe>=2.0.1", "Cython>=0.29.24", "fr-core-news-sm==3.3.0"]
+        "lemmatizer": ["spacy>=3.7.1", "markupsafe>=2.1.3", "Cython>=3.0.3", "fr-core-news-sm>=3.7.0"]
     }
     # pip install words_n_fun || pip install words_n_fun[lemmatizer]
 )

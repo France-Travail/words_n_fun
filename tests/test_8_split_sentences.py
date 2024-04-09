@@ -43,10 +43,106 @@ class SplitSentencesTests(unittest.TestCase):
         dname = os.path.dirname(abspath)
         os.chdir(dname)
 
+    def test_re_multiline(self):
+        """ Test multiline regex"""
+        text = "Toto \n Tata \n\n Et fin"
+        result = split_sentences.re_multiline.split(text)
+        expected = ['Toto', ' Tata', ' Et fin']
+        self.assertEquals(result, expected)
+
+    def test_re_lastspace(self):
+        """ Test last space regex regex"""
+        text = "Toto   \n Tata \n\n Et fin  \t  "
+        result = split_sentences.re_lastspace.sub('', text)
+        expected = 'Toto   \n Tata \n\n Et fin'
+        self.assertEquals(result, expected)
+
+    def test_parenthesis_to_key(self):
+        """ Test last space regex regex"""
+        text = "(Tata (titi) tutu)  Mais pas de )( sans rien"
+        result, keys = split_sentences.parenthesis_to_key(text)        
+
+        expected = "UID_PE_PARENTHESES_1  Mais pas de )( sans rien"
+        expected_keys = [
+            ("UID_PE_PARENTHESES_0","(titi)"),
+            ("UID_PE_PARENTHESES_1","(Tata UID_PE_PARENTHESES_0 tutu)")
+            ]
+        self.assertEquals(expected, result)
+        self.assertEquals(expected_keys, keys)
+
+    def test_key_to_parenthesis(self):
+        """ Test last space regex regex"""
+
+        text = ["UID_PE_PARENTHESES_1  Mais","pas de )( sans rien de UID_PE_PARENTHESES_2"]
+        keys = [
+            ("UID_PE_PARENTHESES_0","(titi)"),
+            ("UID_PE_PARENTHESES_1","(Tata UID_PE_PARENTHESES_0 tutu)"),
+            ("UID_PE_PARENTHESES_2","(Tarari)")
+            ]
+
+        result = split_sentences.key_to_parenthesis(text, keys)        
+
+        expected = ["(Tata (titi) tutu)  Mais","pas de )( sans rien de (Tarari)"]
+        self.assertEquals(expected, result)
+
+    def test_extra_split(self):
+        ''' tests cases of script'''
+        # Same splits
+        sentences = "Normal sentence! Do split. And again."
+        expected = ["Normal sentence! ","Do split. ","And again."]
+        self.assertEqual(split_sentences.re_specialsplit_v1.split(sentences), expected)
+        self.assertEqual(split_sentences.re_specialsplit_v2.split(sentences), expected)
+
+        sentences = "And M. Smith is doing great"
+        expected = ["And M. Smith is doing great"]
+        self.assertEqual(split_sentences.re_specialsplit_v1.split(sentences), expected)
+        self.assertEqual(split_sentences.re_specialsplit_v2.split(sentences), expected)
+
+
+        # Better v2
+        sentences = "The company A.N.D. is doing great"
+        expected = ["The company A.N.D. ","is doing great"]
+        self.assertEqual(split_sentences.re_specialsplit_v1.split(sentences), expected)
+        expected = ["The company A.N.D. is doing great"]
+        self.assertEqual(split_sentences.re_specialsplit_v2.split(sentences), expected)
+
+        sentences = "The company A. N. D. is doing great"
+        expected = ["The company A. ","N. ","D. ","is doing great"]
+        self.assertEqual(split_sentences.re_specialsplit_v1.split(sentences), expected)
+        expected = ["The company A. N. D. is doing great"]
+        self.assertEqual(split_sentences.re_specialsplit_v2.split(sentences), expected)
+
+        sentences = "M. Smith is doing great"
+        expected = ["M. ","Smith is doing great"]
+        self.assertEqual(split_sentences.re_specialsplit_v1.split(sentences), expected)
+        expected = ["M. Smith is doing great"]
+        self.assertEqual(split_sentences.re_specialsplit_v2.split(sentences), expected)
+
+        sentences = "And Mme. Smith is doing great"
+        expected = ["And Mme. ","Smith is doing great"]
+        self.assertEqual(split_sentences.re_specialsplit_v1.split(sentences), expected)
+        expected = ["And Mme. Smith is doing great"]
+        self.assertEqual(split_sentences.re_specialsplit_v2.split(sentences), expected)
+
+        sentences = "Dr. Smith is doing great"
+        expected = ["Dr. ","Smith is doing great"]
+        self.assertEqual(split_sentences.re_specialsplit_v1.split(sentences), expected)
+        expected = ["Dr. Smith is doing great"]
+        self.assertEqual(split_sentences.re_specialsplit_v2.split(sentences), expected)
+
+        # Bettter v1 
+        sentences = "Give me an A. Give me a B."
+        expected = ["Give me an A. ","Give me a B."]
+        self.assertEqual(split_sentences.re_specialsplit_v1.split(sentences), expected)
+        expected = ["Give me an A. Give me a B."]
+        self.assertEqual(split_sentences.re_specialsplit_v2.split(sentences), expected)
+
+
 
     def test_split_sentences_0(self):
         '''On check juste les formats d'entrées de split_sentences'''
         self.assertEqual(split_sentences.split_sentences('test'), ['test'])
+        self.assertEqual(split_sentences.split_sentences('test', 2), ['test'])
 
 
     def test_split_sentences_1(self):
@@ -67,6 +163,7 @@ class SplitSentencesTests(unittest.TestCase):
                  '- Qualité relationnelles et rédactionnelles / Organisation / Rigueur',
                  '- Permis B et véhicule indispensables']
         self.assertEqual(split_sentences.split_sentences(text), result)
+        self.assertEqual(split_sentences.split_sentences(text,2), result)
 
 
     def test_split_sentences_2(self):
@@ -81,6 +178,7 @@ class SplitSentencesTests(unittest.TestCase):
                   "Présent depuis 2007 en Loire-Atlantique nous vous proposons de rejoindre notre équipe dédiée 100% à l'audition (nous disposons de l'agrément Lyric).",
                   'Vous aurez la garantie de travailler dans les meilleures conditions possibles avec comme seul objectif la satisfaction du patient.']
         self.assertEqual(split_sentences.split_sentences(text), result)
+        self.assertEqual(split_sentences.split_sentences(text,2), result)
 
 
     def test_split_sentences_3(self):
@@ -101,6 +199,7 @@ class SplitSentencesTests(unittest.TestCase):
                   'Etre véhiculé(e) est un plus. ',
                   'Prise de poste courant avril, après processus de recrutement et formation.']
         self.assertEqual(split_sentences.split_sentences(text), result)
+        self.assertEqual(split_sentences.split_sentences(text,2), result)
 
 
     def test_split_sentences_4(self):
@@ -116,6 +215,7 @@ class SplitSentencesTests(unittest.TestCase):
                   'Malgré la crise sanitaire du COVID19, le process de recrutement est maintenu dans le respect des règles sanitaires en vigueur. ',
                   "N'hésitez pas à postuler."]
         self.assertEqual(split_sentences.split_sentences(text), result)
+        self.assertEqual(split_sentences.split_sentences(text,2), result)
 
 
     def test_split_sentences_5(self):
@@ -131,6 +231,7 @@ class SplitSentencesTests(unittest.TestCase):
                   '** Aucun logement possible sur place **',
                   "L'employeur déclare mettre en œuvre les mesures sanitaires pour préserver la santé et la sécurité de ses salariés."]
         self.assertEqual(split_sentences.split_sentences(text), result)
+        self.assertEqual(split_sentences.split_sentences(text,2), result)
 
 
     def test_split_sentences_6(self):
@@ -151,6 +252,7 @@ class SplitSentencesTests(unittest.TestCase):
                   'Targett Interim',
                   's.vaillant@outlook.fr']
         self.assertEqual(split_sentences.split_sentences(text), result)
+        self.assertEqual(split_sentences.split_sentences(text,2), result)
 
 
     def test_split_sentences_7(self):
@@ -162,6 +264,7 @@ class SplitSentencesTests(unittest.TestCase):
                   'Organisation: des activités en fonction des besoins des enfants et de la collectivité, du poste de travail, gestion des stocks et des matériaux',
                   "Vous êtes titulaire du diplôme d'état de puériculture."]
         self.assertEqual(split_sentences.split_sentences(text), result)
+        self.assertEqual(split_sentences.split_sentences(text,2), result)
 
 
     def test_split_sentences_8(self):
@@ -171,6 +274,7 @@ class SplitSentencesTests(unittest.TestCase):
                   'Poste (pour la durée de la crise) en remplacement (pour la durée de la crise) sanitaire.',
                   "missions recentrées prioritairement autour de l'entretien des locaux (avec renforcement des procédures d'hygiène en lien avec la situation sanitaire! , service des repas, vaisselle... )."]
         self.assertEqual(split_sentences.split_sentences(text), result)
+        self.assertEqual(split_sentences.split_sentences(text,2), result)
 
 
     def test_split_sentences_9(self):
@@ -189,6 +293,7 @@ class SplitSentencesTests(unittest.TestCase):
                   "Passionné(e) par le cuir et s'inscrivant dans une démarche Qualité et d'Amélioration Continue permanente et individuelle, vous souhaitez participer à un véritable projet d'entreprise.",
                   'Horaires : de 15h00 à 23h00 du Lundi au Jeudi et de 11h00 à 17h00 le Vendredi.']
         self.assertEqual(split_sentences.split_sentences(text), result)
+        self.assertEqual(split_sentences.split_sentences(text,2), result)
 
 
     def test_split_sentences_10(self):
@@ -225,6 +330,21 @@ class SplitSentencesTests(unittest.TestCase):
                   "-  Possibilité d'intégration rapide, de formation et d'évolution,",
                   "-  Bénéficiez d'aides et de services dédiés (mutuelle, logement, garde enfant, déplacement )."]
         self.assertEqual(split_sentences.split_sentences(text), result)
+        self.assertEqual(split_sentences.split_sentences(text,2), result)
+
+    def test_split_acronyms(self):
+        text = "Au sein d'une usine de fabrication de A. T. R. S.\nM. Machin sera votre superviseur"
+        result = ["Au sein d'une usine de fabrication de A. ","T. ","R. ","S.","M. ","Machin sera votre superviseur"]
+        self.assertEqual(split_sentences.split_sentences(text), result) # too many splits
+        result = ["Au sein d'une usine de fabrication de A. T. R. S.","M. Machin sera votre superviseur"]
+        self.assertEqual(split_sentences.split_sentences(text,2), result)
+
+    def test_split_extra_parenthesis(self):
+        text = " Je suis bon en langues (Anglais (Lu, Parlé). Espagnol (Parlé)) et en sports"
+        result= [" Je suis bon en langues (Anglais (Lu, Parlé). ","Espagnol (Parlé)) et en sports"]
+        self.assertEqual(split_sentences.split_sentences(text), [text]) # error in parenthesis split
+        result= [" Je suis bon en langues (Anglais (Lu, Parlé). Espagnol (Parlé)) et en sports"]
+        self.assertEqual(split_sentences.split_sentences(text,2), result) # v2 = no split, '.' in parenthesis
 
 
     def test_split_sentences_df(self):
@@ -243,6 +363,8 @@ class SplitSentencesTests(unittest.TestCase):
 
         # split_sentences_df(df, col)
         df_processed = split_sentences.split_sentences_df(df, 'OFF_DESCRIPTION')
+        pd.testing.assert_frame_equal(df_processed, df_result)
+        df_processed = split_sentences.split_sentences_df(df, 'OFF_DESCRIPTION', version=2)
         pd.testing.assert_frame_equal(df_processed, df_result)
         pd.testing.assert_frame_equal(df, df2)  # On check si pas de modif. sur df original
 

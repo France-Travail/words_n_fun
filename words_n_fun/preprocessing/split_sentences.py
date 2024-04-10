@@ -43,8 +43,8 @@ re_lastspace = re.compile(r"\s+$")
 # Detect parenthesis
 re_parenthesis = re.compile(r"\([^())]+\)")
 # Regex to split punctuation ignoring classicar acronims
-re_specialsplit_v1 = re.compile("(?<!\s\w\.\w.\s)(?<!\sM\.\s)(?<=(?:\.|\?|\!)\s)")
-re_specialsplit_v2 = re.compile(r"(?<!^\w.\s)(?<!\s\w.\s)(?<!\w\.\w.\s)(?<!\bMme\.\s)(?<!\bDr\.\s)(?<=(?:\.|\?|\!)\s)")
+re_specialsplit_v1 = re.compile("(?<!\s\w\.\w\.\s)(?<!\sM\.\s)(?<=(?:\.|\?|!)\s)")
+re_specialsplit_v2 = re.compile(r"(?<!^\w.\s)(?<!\s\w.\s)(?<!\w\.\w\.\s)(?<!\bMme\.\s)(?<!\bDr\.\s)(?<=(?:\.|\?|\!)\s)")
 
 
 def parenthesis_to_key(line: str) -> Tuple[str, List[Tuple]]:

@@ -1,7 +1,7 @@
 [![pypi badge](https://img.shields.io/pypi/v/words_n_fun.svg)](https://pypi.python.org/pypi/words_n_fun)
-![WNF tests 3.9](https://github.com/OSS-Pole-Emploi/words_n_fun/actions/workflows/wnf_build_tests_less_than_39.yaml/badge.svg)
-![WNF tests 3.10](https://github.com/OSS-Pole-Emploi/words_n_fun/actions/workflows/wnf_build_tests_more_than_310.yaml/badge.svg)
-![WNF linter](https://github.com/OSS-Pole-Emploi/words_n_fun/actions/workflows/wnf_linter.yaml/badge.svg)
+![WNF tests 3.9](https://github.com/France-Travail/words_n_fun/actions/workflows/wnf_build_tests_less_than_39.yaml/badge.svg)
+![WNF tests 3.10](https://github.com/France-Travail/words_n_fun/actions/workflows/wnf_build_tests_more_than_310.yaml/badge.svg)
+![WNF linter](https://github.com/France-Travail/words_n_fun/actions/workflows/wnf_linter.yaml/badge.svg)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Generic badge](https://img.shields.io/badge/python-3.8|3.9|3.10|3.11-blue.svg)](https://shields.io/)
 

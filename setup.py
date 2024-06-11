@@ -41,7 +41,7 @@ setup(
     author="Agence Data Services PE Nantes",
     author_email="contactadsaiframeworks.00619@pole-emploi.fr",
     description="Semantic library of the Data Services agency",
-    url="https://github.com/OSS-Pole-Emploi/words_n_fun",
+    url="https://github.com/France-Travail/words_n_fun",
     platforms=['windows', 'linux'],
     python_requires='>=3.8',
     package_data={
